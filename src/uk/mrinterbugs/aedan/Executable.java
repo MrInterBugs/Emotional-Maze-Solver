@@ -14,7 +14,6 @@ import lejos.robotics.SampleProvider;
 import lejos.robotics.chassis.Chassis;
 import lejos.robotics.chassis.Wheel;
 import lejos.robotics.chassis.WheeledChassis;
-import lejos.robotics.navigation.LineFollowingMoveController;
 import lejos.robotics.navigation.MovePilot;
 import lejos.robotics.subsumption.Arbitrator;
 import lejos.robotics.subsumption.Behavior;
@@ -63,8 +62,10 @@ public class Executable {
         firstDisplay();
 
         Behavior MoveForward = new MoveForward(pilot);
+        Behavior EscapeExit = new EscapeExit();
+        Behavior LowBattery = new LowBattery();
 
-        Behavior[] behaviorArray = {MoveForward};
+        Behavior[] behaviorArray = {MoveForward, EscapeExit, LowBattery};
 
         Arbitrator arbitrator = new Arbitrator(behaviorArray);
         arbitrator.go();
@@ -73,5 +74,6 @@ public class Executable {
         us.close();
         cs.close();
         ts.close();
+        System.exit(0);
     }
 }

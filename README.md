@@ -1,5 +1,5 @@
 # Emotional-Maze-Solver
-###CS1822 LeJOS Robotics Project.
+### CS1822 LeJOS Robotics Project.
 For our project we are creating a maze solving robot that will have different behaviours based on NFC tags.
 
 ## Getting Started

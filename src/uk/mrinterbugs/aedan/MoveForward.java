@@ -1,13 +1,13 @@
 package uk.mrinterbugs.aedan;
 
-import lejos.robotics.navigation.MovePilot;
+import lejos.robotics.navigation.Navigator;
 import lejos.robotics.subsumption.Behavior;
 
 public class MoveForward implements Behavior {
-    private MovePilot pilot;
+    private Navigator navi;
 
-    public MoveForward(MovePilot pilot) {
-        this.pilot = pilot;
+    public MoveForward(Navigator navi) {
+        this.navi = navi;
     }
 
     @Override
@@ -17,8 +17,8 @@ public class MoveForward implements Behavior {
 
     @Override
     public void action() {
-        if(!pilot.isMoving()) {
-            pilot.forward();
+        if(!navi.isMoving()) {
+            navi.goTo(100, 0);
         }
     }
 

@@ -15,6 +15,7 @@ import lejos.robotics.chassis.Chassis;
 import lejos.robotics.chassis.Wheel;
 import lejos.robotics.chassis.WheeledChassis;
 import lejos.robotics.navigation.MovePilot;
+import lejos.robotics.navigation.Navigator;
 import lejos.robotics.subsumption.Arbitrator;
 import lejos.robotics.subsumption.Behavior;
 
@@ -58,12 +59,13 @@ public class Executable {
 
         Chassis chassis = new WheeledChassis(new Wheel[]{rightWheel,leftWheel},WheeledChassis.TYPE_DIFFERENTIAL);
         MovePilot pilot = new MovePilot(chassis);
+        Navigator navi = new Navigator(pilot);
 
         firstDisplay();
 
-        Behavior MoveForward = new MoveForward(pilot);
-        Behavior EscapeExit = new EscapeExit();
-        Behavior LowBattery = new LowBattery();
+        Behavior MoveForward = new MoveForward(navi);
+        Behavior EscapeExit = new EscapeExit(navi);
+        Behavior LowBattery = new LowBattery(navi);
 
         Behavior[] behaviorArray = {MoveForward, EscapeExit, LowBattery};
 

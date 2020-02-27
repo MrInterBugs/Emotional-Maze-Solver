@@ -18,7 +18,7 @@ public class MoveForward implements Behavior {
     @Override
     public void action() {
         if(!navi.isMoving()) {
-            navi.goTo(100, 0);
+            navi.goTo(9999, 0);
         }
     }
 

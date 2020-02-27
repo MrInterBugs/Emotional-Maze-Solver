@@ -8,6 +8,7 @@ import lejos.utility.Delay;
 
 public class EscapeExit implements Behavior {
     private Navigator navi;
+    private String shutSound = "ShutDownSound.wav";
 
     public EscapeExit(Navigator navi) {
         this.navi = navi;
@@ -22,7 +23,7 @@ public class EscapeExit implements Behavior {
     public void action() {
         navi.stop();
         LCD.clear();
-        (new ShutDownSound()).start();
+        (new PlaySound(shutSound)).start();
         LCD.drawString("3",2,2);
         Delay.msDelay(500);
         LCD.drawString("2",2,3);

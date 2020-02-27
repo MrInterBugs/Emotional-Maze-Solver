@@ -22,11 +22,13 @@ import lejos.robotics.subsumption.Behavior;
 public class Executable {
     private static final double WHEEL_DIAMETER = 56; // The diameter (mm) of the wheels
     private static final double AXLE_LENGTH = 120; // The distance (mm) your two driven wheels
+    private static final String START_UP = "StartUpSound.wav";
     /**
      * Displays the program and version information until a button is pressed.
      * Also shows group members names.
      */
     public static void firstDisplay() {
+    	(new PlaySound(START_UP)).start();
         LCD.drawString("Emotional Maze Solver",2,2);
         LCD.drawString("Version 0.1",2,3);
         LCD.drawString("Press Enter",2,5);

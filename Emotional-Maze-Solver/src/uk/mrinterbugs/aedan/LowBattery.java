@@ -9,6 +9,7 @@ import lejos.utility.Delay;
 public class LowBattery implements Behavior {
     private static final float LOW_LEVEL = 6.0f;
     private Navigator navi;
+    private String lowSound =  "LowBatterySound.wav";
 
     public LowBattery(Navigator navi) {
         this.navi = navi;
@@ -23,7 +24,7 @@ public class LowBattery implements Behavior {
     public void action() {
         navi.stop();
         LCD.drawString("Low Battery!", 2, 2);
-        (new LowBatterySound()).start();
+        (new PlaySound(lowSound)).start();
         LCD.drawString("Shutdown: 3",2,2);
         Delay.msDelay(500);
         LCD.drawString("2",2,3);

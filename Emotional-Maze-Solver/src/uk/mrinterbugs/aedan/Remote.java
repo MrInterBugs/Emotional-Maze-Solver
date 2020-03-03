@@ -49,7 +49,7 @@ public class Remote extends Thread {
 		}
 
 		LCD.drawString("Waiting  ", 0, 1);
-		while (!Button.ESCAPE.isDown()) {
+		while (true) {
 			if (connection != null) {
 				try {
 					if (in.available() > 0) {

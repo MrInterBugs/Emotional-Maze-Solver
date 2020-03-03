@@ -42,6 +42,36 @@ public class Executable {
         Button.ENTER.waitForPressAndRelease();
         LCD.clear();
     }
+    
+    private static float[] calibrateColorSensor(SampleProvider colorSampler) {
+    	String[] calibrations = new String[]{"white", "black"};
+    	float[] lightLevels = new float[calibrations.length];
+    	
+    	int index = 0;
+    	for(String calibration: calibrations) {
+    		LCD.drawString("Place sensor on " + calibration + " surface", 2, 2);
+    		LCD.drawString("Press enter to continue", 2, 3);
+    		Button.ENTER.waitForPressAndRelease();
+    		LCD.clear();
+    		LCD.drawString("Calibrating", 2, 2);
+    		LCD.drawString("Press enter to stop", 2, 3);
+    		lightLevels[index] = averageReadings(colorSampler);
+    	}
+    	
+    	return lightLevels;
+    }
+    
+    private static float averageReadings(SampleProvider sampleProvider) {
+    	float average = 0;
+    	int readings = 0;
+    	float[] reading = new float[1];
+    	while(Button.ENTER.isUp()) {
+    		sampleProvider.fetchSample(reading, 0);
+    		readings++;
+    		average = average + (reading[0] - average) / readings;
+    	}
+    	return average;
+    }
 
     public static void main(String[] args) {
 
@@ -49,8 +79,11 @@ public class Executable {
         SampleProvider sound = ss.getDBAMode();
         EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S2);
         SampleProvider distance = us.getDistanceMode();
+        
         EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S3);
-        SampleProvider colour = cs.getRedMode();
+        SampleProvider color = cs.getRedMode();
+        float lightLevels[] = calibrateColorSensor(color);
+        
         EV3TouchSensor ts = new EV3TouchSensor(SensorPort.S4);
         SampleProvider touch = ts.getTouchMode();
 
@@ -68,6 +101,7 @@ public class Executable {
         Behavior MoveForward = new MoveForward(navi);
         Behavior EscapeExit = new EscapeExit(navi);
         Behavior LowBattery = new LowBattery(navi);
+        Behavior LineFollower = new LineFollower(navi, color, lightLevels);
 
         Behavior[] behaviorArray = {MoveForward, EscapeExit, LowBattery};
 

@@ -24,7 +24,6 @@ public class Remote extends Thread {
 	
     public void run() {
     	byte[] buffer = new byte[MAX_READ];
-		//(new TunePlayer()).start();
 		
 		LCD.drawString("Waiting  ", 0, 0);
 		SocketAddress sa = new InetSocketAddress(IPaddress, port);

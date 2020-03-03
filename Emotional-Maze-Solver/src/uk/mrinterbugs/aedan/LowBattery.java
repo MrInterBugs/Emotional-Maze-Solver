@@ -25,11 +25,11 @@ public class LowBattery implements Behavior {
         navi.stop();
         LCD.drawString("Low Battery!", 2, 2);
         (new PlaySound(lowSound)).start();
-        LCD.drawString("Shutdown: 3",2,2);
+        LCD.drawString("Shutdown: 3",2,3);
         Delay.msDelay(500);
-        LCD.drawString("2",2,3);
+        LCD.drawString("2",2,4);
         Delay.msDelay(500);
-        LCD.drawString("1",2,4);
+        LCD.drawString("1",2,5);
         Delay.msDelay(500);
         System.exit(-1);
     }

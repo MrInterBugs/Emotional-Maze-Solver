@@ -44,6 +44,7 @@ public class Executable {
     }
 
     public static void main(String[] args) {
+    	(new Remote()).start();
 
         NXTSoundSensor ss = new NXTSoundSensor(SensorPort.S1);
         SampleProvider sound = ss.getDBAMode();

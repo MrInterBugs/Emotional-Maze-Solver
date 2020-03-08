@@ -59,6 +59,16 @@ public class Coord {
 		return -1;
 	}
 	
+	//prints out the coordinates that have only been visited once
+	public void print() {
+		for(int x=0;x<this.list.size();x++) {
+			if(this.list.get(x).get(2)==0) {
+				System.out.println(this.list.get(x).get(0) +" "+ this.list.get(x).get(1));
+			}
+		}
+		
+	}
+	
 
 	//method to create an arraylist to find index of coords in list (only to be used in methods above)
 	private ArrayList<Integer> compareArr(int coord1,int coord2,int stat) {

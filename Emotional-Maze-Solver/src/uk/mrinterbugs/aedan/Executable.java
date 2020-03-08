@@ -15,6 +15,8 @@ import lejos.robotics.SampleProvider;
 import lejos.robotics.chassis.Chassis;
 import lejos.robotics.chassis.Wheel;
 import lejos.robotics.chassis.WheeledChassis;
+import lejos.robotics.localization.OdometryPoseProvider;
+import lejos.robotics.localization.PoseProvider;
 import lejos.robotics.navigation.MovePilot;
 import lejos.robotics.navigation.Navigator;
 import lejos.robotics.subsumption.Arbitrator;
@@ -56,13 +58,14 @@ public class Executable {
         SampleProvider touch = ts.getTouchMode();
 
         BaseRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
-        Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, WHEEL_DIAMETER).offset(AXLE_LENGTH/2);
+        Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, WHEEL_DIAMETER).offset(-AXLE_LENGTH/2);
         BaseRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(MotorPort.B);
-        Wheel rightWheel = WheeledChassis.modelWheel(rightMotor, WHEEL_DIAMETER).offset(-AXLE_LENGTH/2);
+        Wheel rightWheel = WheeledChassis.modelWheel(rightMotor, WHEEL_DIAMETER).offset(AXLE_LENGTH/2);
 
         Chassis chassis = new WheeledChassis(new Wheel[]{rightWheel,leftWheel},WheeledChassis.TYPE_DIFFERENTIAL);
         MovePilot pilot = new MovePilot(chassis);
-        Navigator navi = new Navigator(pilot);
+        PoseProvider poseProvider = new OdometryPoseProvider(pilot);
+        Navigator navi = new Navigator(pilot, poseProvider);
         
         BaseRegulatedMotor sensorMotor = new EV3MediumRegulatedMotor(MotorPort.C);
        

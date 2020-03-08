@@ -4,6 +4,7 @@ import lejos.hardware.Button;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.BaseRegulatedMotor;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
@@ -62,10 +63,12 @@ public class Executable {
         Chassis chassis = new WheeledChassis(new Wheel[]{rightWheel,leftWheel},WheeledChassis.TYPE_DIFFERENTIAL);
         MovePilot pilot = new MovePilot(chassis);
         Navigator navi = new Navigator(pilot);
-
+        
+        BaseRegulatedMotor sensorMotor = new EV3MediumRegulatedMotor(MotorPort.C);
+       
         firstDisplay();
 
-        Behavior MoveForward = new MoveForward(navi);
+        Behavior MoveForward = new MoveForward(navi, sensorMotor);
         Behavior EscapeExit = new EscapeExit(navi);
         Behavior LowBattery = new LowBattery(navi);
 
@@ -78,6 +81,7 @@ public class Executable {
         us.close();
         cs.close();
         ts.close();
+        sensorMotor.close();
         System.exit(0);
     }
 }

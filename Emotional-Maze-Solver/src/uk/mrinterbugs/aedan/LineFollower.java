@@ -15,6 +15,8 @@ public class LineFollower implements Behavior {
 	private float averageLight;
 	private int slowSpeed = 10;
 	private int mediumSpeed = slowSpeed * 2;
+	private int adjustmentsLeft = 0;
+	private int adjustmentsRight = 0;
 
 	public LineFollower(Navigator navi, SampleProvider colorSampler, float[] lightLevels) {
 		this.navi = navi;
@@ -40,10 +42,14 @@ public class LineFollower implements Behavior {
 		if(this.onDarkSurface()) {
 			System.out.println("dark");
 			getNavi().rotateTo(currentHeading + 2);
+			incrementAdjustmentsLeft();
+			setAdjustmentsRight(0);
 			LCD.clear();
-		} else {
+		} else {	
 			System.out.println("light");
 			getNavi().rotateTo(currentHeading - 2);
+			incrementAdjustmentsRight();
+			setAdjustmentsLeft(0);
 			LCD.clear();
 		}
 	}
@@ -120,5 +126,29 @@ public class LineFollower implements Behavior {
 
 	private void setBlackIndex(int blackIndex) {
 		this.blackIndex = blackIndex;
+	}
+	
+	private void incrementAdjustmentsLeft() {
+		this.setAdjustmentsLeft(getAdjustmentsLeft() + 1);
+	}
+
+	private int getAdjustmentsLeft() {
+		return adjustmentsLeft;
+	}
+
+	private void setAdjustmentsLeft(int adjustmentsLeft) {
+		this.adjustmentsLeft = adjustmentsLeft;
+	}
+	
+	private void incrementAdjustmentsRight() {
+		this.setAdjustmentsRight(getAdjustmentsRight() + 1);
+	}
+
+	private int getAdjustmentsRight() {
+		return adjustmentsRight;
+	}
+
+	private void setAdjustmentsRight(int adjustmentsRight) {
+		this.adjustmentsRight = adjustmentsRight;
 	}
 }

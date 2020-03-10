@@ -49,13 +49,15 @@ public class Executable {
     	
     	int index = 0;
     	for(String calibration: calibrations) {
-    		LCD.drawString("Place sensor on " + calibration + " surface", 2, 2);
-    		LCD.drawString("Press enter to continue", 2, 3);
+    		LCD.drawString("Place sensor on", 2, 2);
+    		LCD.drawString(calibration + " surface", 2, 3);
+    		
+    		LCD.drawString("Press enter to continue", 2, 4);
     		Button.ENTER.waitForPressAndRelease();
     		LCD.clear();
     		LCD.drawString("Calibrating", 2, 2);
-    		LCD.drawString("Press enter to stop", 2, 3);
     		lightLevels[index] = averageReadings(colorSampler);
+    		LCD.clear();
     	}
     	
     	return lightLevels;
@@ -65,7 +67,7 @@ public class Executable {
     	float average = 0;
     	int readings = 0;
     	float[] reading = new float[1];
-    	while(Button.ENTER.isUp()) {
+    	for(int i=0; i<100; i++) {
     		sampleProvider.fetchSample(reading, 0);
     		readings++;
     		average = average + (reading[0] - average) / readings;
@@ -77,8 +79,8 @@ public class Executable {
 
         NXTSoundSensor ss = new NXTSoundSensor(SensorPort.S1);
         SampleProvider sound = ss.getDBAMode();
-        EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S2);
-        SampleProvider distance = us.getDistanceMode();
+        //EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S2);
+        //SampleProvider distance = us.getDistanceMode();
         
         EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S3);
         SampleProvider color = cs.getRedMode();
@@ -102,14 +104,15 @@ public class Executable {
         Behavior EscapeExit = new EscapeExit(navi);
         Behavior LowBattery = new LowBattery(navi);
         Behavior LineFollower = new LineFollower(navi, color, lightLevels);
+        System.out.println(navi.getPoseProvider().getPose().getHeading());
 
-        Behavior[] behaviorArray = {MoveForward, EscapeExit, LowBattery};
+        Behavior[] behaviorArray = {LineFollower, EscapeExit, LowBattery};
 
         Arbitrator arbitrator = new Arbitrator(behaviorArray);
         arbitrator.go();
 
         ss.close();
-        us.close();
+        //us.close();
         cs.close();
         ts.close();
         System.exit(0);

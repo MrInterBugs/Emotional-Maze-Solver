@@ -24,10 +24,7 @@ public class Executable {
     private static final double WHEEL_DIAMETER = 56; // The diameter (mm) of the wheels
     private static final double AXLE_LENGTH = 120; // The distance (mm) your two driven wheels
     private static final String START_UP = "StartUpSound.wav";
-    /**
-     * Displays the program and version information until a button is pressed.
-     * Also shows group members names.
-     */
+    
     public static void firstDisplay() {
         LCD.drawString("Emotional Maze Solver",2,2);
         LCD.drawString("Version 0.1",2,3);
@@ -47,12 +44,8 @@ public class Executable {
 
         NXTSoundSensor ss = new NXTSoundSensor(SensorPort.S1);
         SampleProvider sound = ss.getDBAMode();
-//        EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S2);
-//        SampleProvider distance = us.getDistanceMode();
         EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S2);
         SampleProvider colour = cs.getRedMode();
-//        EV3TouchSensor ts = new EV3TouchSensor(SensorPort.S4);
-//        SampleProvider touch = ts.getTouchMode();
 
         BaseRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
         Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, WHEEL_DIAMETER).offset(AXLE_LENGTH/2);
@@ -67,7 +60,6 @@ public class Executable {
         
         firstDisplay();
   
-        //(new PlaySound(START_UP)).start();
         (new Remote()).start();
 
         Behavior EscapeExit = new EscapeExit(navi);
@@ -80,9 +72,7 @@ public class Executable {
         arbitrator.go();
 
         ss.close();
-//        us.close();
         cs.close();
-//        ts.close();
         System.exit(0);
     }
 }

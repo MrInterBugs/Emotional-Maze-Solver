@@ -1,6 +1,5 @@
 package uk.mrinterbugs.aedan;
 
-import lejos.hardware.lcd.LCD;
 import lejos.robotics.navigation.MovePilot;
 import lejos.robotics.subsumption.Behavior;
 
@@ -15,7 +14,6 @@ public class RemoteBehaviour implements Behavior{
 	@Override
 	public boolean takeControl() {
 		input = Remote.getInput();
-		LCD.drawString(input, 3, 3);
 		switch (input) {
         case "up":
             return true;

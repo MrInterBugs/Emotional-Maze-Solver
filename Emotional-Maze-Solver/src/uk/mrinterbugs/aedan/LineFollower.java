@@ -63,17 +63,7 @@ public class LineFollower implements Behavior {
 	}
 	
 	private void findTurn() {
-		/*
-		 * Rotate Left
-		 * Scan for dark
-		 * If dark, turn
-		 * Else
-		 * Rotate back 180 to the right
-		 * Scan for dark
-		 * If dark, turn
-		 * 
-		 */
-		getNavigatorMoveController().travel(35, false);
+		getNavigatorMoveController().travel(37, false);
 		correctRotation();
 		rotateLeft();
 		if(!this.onDarkSurface()) {
@@ -91,7 +81,7 @@ public class LineFollower implements Behavior {
 			rotateClockwiseDegrees(rotationCorrectionDegree * getAdjustmentsRight());
 		}
 		this.setAdjustmentsLeft(0);
-		this.setAdjustmentsRight(9);
+		this.setAdjustmentsRight(0);
 	}
 	
 	private void rotateLeft() {

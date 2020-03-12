@@ -28,7 +28,7 @@ public class Executable {
      * Also shows group members names.
      */
     public static void firstDisplay() {
-    	(new PlaySound(START_UP)).start();
+    	//(new PlaySound(START_UP)).start();
         LCD.drawString("Emotional Maze Solver",2,2);
         LCD.drawString("Version 0.1",2,3);
         LCD.drawString("Press Enter",2,5);
@@ -52,11 +52,13 @@ public class Executable {
     		LCD.drawString("Place sensor on", 2, 2);
     		LCD.drawString(calibration + " surface", 2, 3);
     		
-    		LCD.drawString("Press enter to continue", 2, 4);
+    		LCD.drawString("Press enter", 2, 4);
+    		LCD.drawString("to continue", 2, 5);
     		Button.ENTER.waitForPressAndRelease();
     		LCD.clear();
     		LCD.drawString("Calibrating", 2, 2);
     		lightLevels[index] = averageReadings(colorSampler);
+    		index++;
     		LCD.clear();
     	}
     	
@@ -82,12 +84,12 @@ public class Executable {
         //EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S2);
         //SampleProvider distance = us.getDistanceMode();
         
-        EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S3);
+        EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S2);
         SampleProvider color = cs.getRedMode();
         float lightLevels[] = calibrateColorSensor(color);
         
-        EV3TouchSensor ts = new EV3TouchSensor(SensorPort.S4);
-        SampleProvider touch = ts.getTouchMode();
+        //EV3TouchSensor ts = new EV3TouchSensor(SensorPort.S4);
+        //SampleProvider touch = ts.getTouchMode();
 
         BaseRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
         Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, WHEEL_DIAMETER).offset(AXLE_LENGTH/2);
@@ -96,6 +98,8 @@ public class Executable {
 
         Chassis chassis = new WheeledChassis(new Wheel[]{rightWheel,leftWheel},WheeledChassis.TYPE_DIFFERENTIAL);
         MovePilot pilot = new MovePilot(chassis);
+        pilot.setAngularAcceleration(100);
+        pilot.setAngularSpeed(20);
         Navigator navi = new Navigator(pilot);
 
         firstDisplay();
@@ -114,7 +118,7 @@ public class Executable {
         ss.close();
         //us.close();
         cs.close();
-        ts.close();
+        //ts.close();
         System.exit(0);
     }
 }

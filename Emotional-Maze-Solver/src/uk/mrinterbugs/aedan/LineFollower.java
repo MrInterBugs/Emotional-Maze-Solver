@@ -9,14 +9,15 @@ import lejos.robotics.subsumption.Behavior;
 public class LineFollower implements Behavior {
 	private Navigator navi;
 	private SampleProvider colorSampler;
-	private float[] lightLevels;
-	private int whiteIndex = 0;
-	private int blackIndex = 1;
-	private float averageLight;
-	private int slowSpeed = 10;
-	private int mediumSpeed = slowSpeed * 2;
+	private final float[] lightLevels;
+	private final int whiteIndex = 0;
+	private final int blackIndex = 1;
+	private final float averageLight;
+	private final int slowSpeed = 10;
+	private final int mediumSpeed = slowSpeed * 2;
 	private int adjustmentsLeft = 0;
 	private int adjustmentsRight = 0;
+	private final int rotationCorrectionDegree = 2;
 
 	public LineFollower(Navigator navi, SampleProvider colorSampler, float[] lightLevels) {
 		this.navi = navi;
@@ -37,20 +38,23 @@ public class LineFollower implements Behavior {
 	}
 	
 	private void followLeftWall() {
-		float currentHeading = this.getCurrentHeading();
-		getNavigatorMoveController().travel(25, false);
-		if(this.onDarkSurface()) {
-			System.out.println("dark");
-			getNavi().rotateTo(currentHeading + 2);
-			incrementAdjustmentsLeft();
-			setAdjustmentsRight(0);
-			LCD.clear();
-		} else {	
-			System.out.println("light");
-			getNavi().rotateTo(currentHeading - 2);
-			incrementAdjustmentsRight();
-			setAdjustmentsLeft(0);
-			LCD.clear();
+		getNavigatorMoveController().travel(10, false);
+		if(getConsecutiveAdjustments() < 4) {
+			if(this.onDarkSurface()) {
+				System.out.println("dark");
+				rotateClockwiseDegrees(rotationCorrectionDegree);
+				incrementAdjustmentsLeft();
+				setAdjustmentsRight(0);
+				LCD.clear();
+			} else {	
+				System.out.println("light");
+				rotateClockwiseDegrees(-rotationCorrectionDegree);
+				incrementAdjustmentsRight();
+				setAdjustmentsLeft(0);
+				LCD.clear();
+			}
+		} else {
+			findTurn();
 		}
 	}
 
@@ -58,12 +62,50 @@ public class LineFollower implements Behavior {
 
 	}
 	
+	private void findTurn() {
+		/*
+		 * Rotate Left
+		 * Scan for dark
+		 * If dark, turn
+		 * Else
+		 * Rotate back 180 to the right
+		 * Scan for dark
+		 * If dark, turn
+		 * 
+		 */
+		getNavigatorMoveController().travel(35, false);
+		correctRotation();
+		rotateLeft();
+		if(!this.onDarkSurface()) {
+			rotateClockwiseDegrees(180);
+			if(!this.onDarkSurface()) {
+				rotateLeft();
+			}
+		}
+	}
+	
+	private void correctRotation() {
+		if(this.getAdjustmentsLeft() > 0) {
+			rotateClockwiseDegrees(rotationCorrectionDegree * getAdjustmentsLeft());
+		} else if(this.getAdjustmentsRight() > 0) {
+			rotateClockwiseDegrees(rotationCorrectionDegree * getAdjustmentsRight());
+		}
+		this.setAdjustmentsLeft(0);
+		this.setAdjustmentsRight(9);
+	}
+	
 	private void rotateLeft() {
-		getNavi().rotateTo(getCurrentHeading() - 90);
+		rotateClockwiseDegrees(-90);
+	}
+	
+	private void rotateRight() {
+		rotateClockwiseDegrees(90);
 	}
 
 	private boolean onDarkSurface() {
-		return getLightSample() < getAverageLight();
+		System.out.println(getLightSample());
+		System.out.println(getAverageLight());
+		return getLightSample() <= getAverageLight();
 	}
 
 	private float getLightSample() {
@@ -79,13 +121,13 @@ public class LineFollower implements Behavior {
 	private float getCurrentHeading() {
 		return getNavi().getPoseProvider().getPose().getHeading();
 	}
+	
+	private void rotateClockwiseDegrees(int degrees) {
+		getNavi().rotateTo(getCurrentHeading() + degrees);
+	}
 
 	private float getAverageLight() {
 		return this.averageLight;
-	}
-
-	private void setAverageLight(float averageLight) {
-		this.averageLight = averageLight;
 	}
 
 	private Navigator getNavi() {
@@ -108,24 +150,12 @@ public class LineFollower implements Behavior {
 		return lightLevels;
 	}
 
-	private void setLightLevels(float[] lightLevels) {
-		this.lightLevels = lightLevels;
-	}
-
 	private int getWhiteIndex() {
 		return whiteIndex;
 	}
 
-	private void setWhiteIndex(int whiteIndex) {
-		this.whiteIndex = whiteIndex;
-	}
-
 	private int getBlackIndex() {
 		return blackIndex;
-	}
-
-	private void setBlackIndex(int blackIndex) {
-		this.blackIndex = blackIndex;
 	}
 	
 	private void incrementAdjustmentsLeft() {
@@ -150,5 +180,15 @@ public class LineFollower implements Behavior {
 
 	private void setAdjustmentsRight(int adjustmentsRight) {
 		this.adjustmentsRight = adjustmentsRight;
+	}
+	
+	private int getConsecutiveAdjustments() {
+		int rightAdjustments = getAdjustmentsRight();
+		int leftAdjustments = getAdjustmentsLeft();
+		if(rightAdjustments > leftAdjustments) {
+			return rightAdjustments;
+		} else {
+			return leftAdjustments;
+		}
 	}
 }

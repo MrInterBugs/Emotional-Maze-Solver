@@ -60,7 +60,6 @@ public class Executable {
         LCD.clear();
     }
     
-
     /**
      * This is the main body of the code.
      * It is only used to initialise sensors motors and arbitrators as well as call other methods.
@@ -71,9 +70,8 @@ public class Executable {
         SampleProvider sound = ss.getDBAMode();
         EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S2);
         SampleProvider color = cs.getRedMode();
+        
         float lightLevels[] = SensorCalibration.calibrateColorSensor(color);
-        EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S2);
-        SampleProvider colour = cs.getRedMode();
 
         BaseRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
         Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, WHEEL_DIAMETER).offset(AXLE_LENGTH/2);
@@ -82,9 +80,10 @@ public class Executable {
 
         Chassis chassis = new WheeledChassis(new Wheel[]{rightWheel,leftWheel},WheeledChassis.TYPE_DIFFERENTIAL);
         MovePilot pilot = new MovePilot(chassis);
+        Navigator navi = new Navigator(pilot);
+        
         pilot.setAngularAcceleration(100);
         pilot.setAngularSpeed(20);
-        Navigator navi = new Navigator(pilot);
         
         BaseRegulatedMotor sensorMotor = new EV3MediumRegulatedMotor(MotorPort.C);
        
@@ -92,10 +91,9 @@ public class Executable {
 
         Behavior EscapeExit = new EscapeExit(navi);
         Behavior LowBattery = new LowBattery(navi);
-        Behavior LineFollower = new LineFollower(navi, color, lightLevels);
-        System.out.println(navi.getPoseProvider().getPose().getHeading());
+        Behavior FollowLeftWall = new LineFollower(navi, color, lightLevels);
 
-        Behavior[] behaviorArray = {LineFollower, EscapeExit, LowBattery};
+        Behavior[] behaviorArray = {FollowLeftWall, EscapeExit, LowBattery};
         (new PlaySound(START_UP)).start();
 
         Arbitrator arbitrator = new Arbitrator(behaviorArray);

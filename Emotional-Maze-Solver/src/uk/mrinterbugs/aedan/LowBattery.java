@@ -31,7 +31,7 @@ public class LowBattery implements Behavior {
         Delay.msDelay(500);
         LCD.drawString("1",2,5);
         Delay.msDelay(500);
-        System.exit(-1);
+        System.exit(0);
     }
 
     @Override

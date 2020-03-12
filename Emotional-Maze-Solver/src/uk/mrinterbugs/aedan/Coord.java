@@ -1,21 +1,14 @@
 package uk.mrinterbugs.aedan;
 import java.util.ArrayList;
 
-
-
-
 public class Coord {
 	private ArrayList<ArrayList<Integer>> list;
 	
-	
-	
 	public Coord() {
 		this.list = new ArrayList<>();
-	
-		
 	}
+	
 	public void add(int coord1,int coord2) {
-
 		// add new elements to the main arraylist
 		this.list.add(new ArrayList<Integer>());
 		int curr = this.list.size()-1;
@@ -23,25 +16,15 @@ public class Coord {
 		this.list.get(curr).add(coord1);
 		this.list.get(curr).add(coord2);
 		this.list.get(curr).add(0);
-		
-	
-		
-
 	}
 	
 	public void markoff(int coord1,int coord2) {
-		
 		//test arraylist used to find the index of the coords in list arraylist
 		ArrayList<Integer> test = compareArr(coord1,coord2,0);
-
 		
 		int index = list.indexOf(test);
 		//sets the 3rd element of the arraylist to 1 showing it has been marked off
-		this.list.get(index).set(2, 1);
-
-
-			
-
+		this.list.get(index).set(2, 1);	
 	}
 
 	//method checks if coords have been visited once,twice(marked off) or never
@@ -66,7 +49,6 @@ public class Coord {
 				System.out.println(this.list.get(x).get(0) +" "+ this.list.get(x).get(1));
 			}
 		}
-		
 	}
 	
 
@@ -76,13 +58,6 @@ public class Coord {
 		test.add(coord1);
 		test.add(coord2);
 		test.add(stat);
-		
 		return test;
 	}	
-	
-	
-	
-	
-	
-
 }

@@ -30,7 +30,7 @@ public class EscapeExit implements Behavior {
         Delay.msDelay(500);
         LCD.drawString("1",2,4);
         Delay.msDelay(500);
-        System.exit(-1);
+        System.exit(0);
     }
 
     @Override

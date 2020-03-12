@@ -3,7 +3,6 @@ package uk.mrinterbugs.aedan;
 import java.io.File;
 
 import lejos.hardware.Sound;
-import lejos.hardware.lcd.LCD;
 
 public class PlaySound extends Thread {
 	private String filename;

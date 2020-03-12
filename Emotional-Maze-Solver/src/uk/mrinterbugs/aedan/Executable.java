@@ -1,6 +1,7 @@
 package uk.mrinterbugs.aedan;
 
 import lejos.hardware.Button;
+import lejos.hardware.Sound;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.BaseRegulatedMotor;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
@@ -40,7 +41,7 @@ public class Executable {
     private static final double WHEEL_DIAMETER = 56;
     private static final double AXLE_LENGTH = 120;
     private static final String START_UP = "StartUpSound.wav";
-    
+
     /**
      * Displays the program and version information until a button is pressed.
      * Also shows group members names.
@@ -81,19 +82,23 @@ public class Executable {
         Chassis chassis = new WheeledChassis(new Wheel[]{rightWheel,leftWheel},WheeledChassis.TYPE_DIFFERENTIAL);
         MovePilot pilot = new MovePilot(chassis);
         Navigator navi = new Navigator(pilot);
-        
         pilot.setAngularAcceleration(100);
         pilot.setAngularSpeed(20);
         
+        Sound.setVolume(100);      
+
         BaseRegulatedMotor sensorMotor = new EV3MediumRegulatedMotor(MotorPort.C);
        
         firstDisplay();
+  
+        (new Remote()).start();
 
         Behavior EscapeExit = new EscapeExit(navi);
         Behavior LowBattery = new LowBattery(navi);
+        Behavior Remote = new RemoteBehaviour(pilot);
         Behavior FollowLeftWall = new LineFollower(navi, color, lightLevels);
 
-        Behavior[] behaviorArray = {FollowLeftWall, EscapeExit, LowBattery};
+        Behavior[] behaviorArray = {FollowLeftWall, Remote, EscapeExit, LowBattery};
         (new PlaySound(START_UP)).start();
 
         Arbitrator arbitrator = new Arbitrator(behaviorArray);
@@ -102,5 +107,6 @@ public class Executable {
         ss.close();
         cs.close();
         sensorMotor.close();
+        System.exit(0);
     }
 }

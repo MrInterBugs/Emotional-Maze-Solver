@@ -9,7 +9,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 
-import lejos.hardware.Button;
 import lejos.hardware.lcd.LCD;
 
 public class Remote extends Thread {
@@ -21,6 +20,20 @@ public class Remote extends Thread {
 	private static int MAX_READ = 30;
 	private static BufferedInputStream in = null;
 	private static OutputStream out = null;
+	private static String input = "";
+//	private MovePilot pilot;
+	
+//	public Remote(MovePilot pilot) {
+//		this.pilot = pilot;
+//	}
+	
+	public static String getInput() {
+		return input;
+	}
+	
+	public static void setInput(String blank) {
+		input = blank;
+	}
 	
     public void run() {
     	byte[] buffer = new byte[MAX_READ];
@@ -49,24 +62,25 @@ public class Remote extends Thread {
 		}
 
 		LCD.drawString("Waiting  ", 0, 1);
-		while (true) {
-			if (connection != null) {
-				try {
-					if (in.available() > 0) {
-						LCD.drawString("Chars read: ", 0, 2);
-						LCD.drawInt(in.available(), 12, 2);
-						int read = in.read(buffer, 0, MAX_READ);
-						LCD.drawChar('[', 3, 3);
-						for (int index= 0 ; index < read ; index++) {						
-							LCD.drawChar((char)buffer[index], index + 4, 3);
-						}
-						LCD.drawChar(']', read + 4, 3);
-						out.write("Reply:".getBytes(), 0, 6);
-						out.write(buffer, 0, read);
+		while (connection != null) {
+			try {
+				if (in.available() > 0) {
+					String oldInput = input;
+					LCD.drawString("Chars read: ", 0, 2);
+					LCD.drawInt(in.available(), 12, 2);
+					int read = in.read(buffer, 0, MAX_READ);
+					for (int index= 0 ; index < read ; index++) {						
+						input = input + (char)buffer[index];
 					}
-				} catch (IOException ignored) {
+					out.write("Reply:".getBytes(), 0, 6);
+					out.write(buffer, 0, read);
 				}
+				sleep(1);
+				input = "";
+			} catch (IOException ignored) {
+		} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-		}
 	}
+}
 }

@@ -1,6 +1,7 @@
 package uk.mrinterbugs.aedan;
 
 import lejos.hardware.Button;
+import lejos.hardware.Sound;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.BaseRegulatedMotor;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
@@ -28,7 +29,6 @@ public class Executable {
      * Also shows group members names.
      */
     public static void firstDisplay() {
-    	(new PlaySound(START_UP)).start();
         LCD.drawString("Emotional Maze Solver",2,2);
         LCD.drawString("Version 0.1",2,3);
         LCD.drawString("Press Enter",2,5);
@@ -44,16 +44,15 @@ public class Executable {
     }
 
     public static void main(String[] args) {
-    	(new Remote()).start();
 
         NXTSoundSensor ss = new NXTSoundSensor(SensorPort.S1);
         SampleProvider sound = ss.getDBAMode();
-        EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S2);
-        SampleProvider distance = us.getDistanceMode();
-        EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S3);
+//        EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S2);
+//        SampleProvider distance = us.getDistanceMode();
+        EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S2);
         SampleProvider colour = cs.getRedMode();
-        EV3TouchSensor ts = new EV3TouchSensor(SensorPort.S4);
-        SampleProvider touch = ts.getTouchMode();
+//        EV3TouchSensor ts = new EV3TouchSensor(SensorPort.S4);
+//        SampleProvider touch = ts.getTouchMode();
 
         BaseRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
         Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, WHEEL_DIAMETER).offset(AXLE_LENGTH/2);
@@ -63,22 +62,27 @@ public class Executable {
         Chassis chassis = new WheeledChassis(new Wheel[]{rightWheel,leftWheel},WheeledChassis.TYPE_DIFFERENTIAL);
         MovePilot pilot = new MovePilot(chassis);
         Navigator navi = new Navigator(pilot);
-
+        
+        Sound.setVolume(100);
+        
         firstDisplay();
+  
+        //(new PlaySound(START_UP)).start();
+        (new Remote()).start();
 
-        Behavior MoveForward = new MoveForward(navi);
         Behavior EscapeExit = new EscapeExit(navi);
         Behavior LowBattery = new LowBattery(navi);
+        Behavior Remote = new RemoteBehaviour(pilot);
 
-        Behavior[] behaviorArray = {MoveForward, EscapeExit, LowBattery};
+		Behavior[] behaviorArray = {Remote, EscapeExit, LowBattery};
 
         Arbitrator arbitrator = new Arbitrator(behaviorArray);
         arbitrator.go();
 
         ss.close();
-        us.close();
+//        us.close();
         cs.close();
-        ts.close();
+//        ts.close();
         System.exit(0);
     }
 }

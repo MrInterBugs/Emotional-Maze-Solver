@@ -24,7 +24,7 @@ public class EscapeExit implements Behavior {
         navi.stop();
         LCD.clear();
         (new PlaySound(shutSound)).start();
-        LCD.drawString("3",2,2);
+        LCD.drawString("Escape key: 3",2,2);
         Delay.msDelay(500);
         LCD.drawString("2",2,3);
         Delay.msDelay(500);

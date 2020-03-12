@@ -102,9 +102,9 @@ public class TremauxAlgorithm implements Behavior {
     	int currentX = 0;
     	int currentY = 0;
     	
-    	float tempHeading = Float.parseFloat(String.valueOf(this.navi.getPoseProvider().getPose().getHeading()));
-    	int tempX = (int)(Float.parseFloat(String.valueOf(this.navi.getPoseProvider().getPose().getX())));
-    	int tempY = (int)(Float.parseFloat(String.valueOf(this.navi.getPoseProvider().getPose().getY())));
+    	float tempHeading = this.navi.getPoseProvider().getPose().getHeading();
+    	int tempX = (int) this.navi.getPoseProvider().getPose().getX();
+    	int tempY = (int) this.navi.getPoseProvider().getPose().getY();
     	
     	while (true) {
         	int lastDigitX = Math.abs(tempX%10);

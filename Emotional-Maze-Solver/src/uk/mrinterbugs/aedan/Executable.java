@@ -5,11 +5,10 @@ import lejos.hardware.Sound;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.BaseRegulatedMotor;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
-import lejos.hardware.sensor.EV3TouchSensor;
-import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.NXTSoundSensor;
 import lejos.robotics.SampleProvider;
 import lejos.robotics.chassis.Chassis;
@@ -20,11 +19,33 @@ import lejos.robotics.navigation.Navigator;
 import lejos.robotics.subsumption.Arbitrator;
 import lejos.robotics.subsumption.Behavior;
 
+/**
+ * Executable is the main class which is run from the LeJOS robot.
+ * The robot is capable of solving a maze whilst displaying different "emotions".
+ *
+ * @author Aedan Lawrence
+ * @author Bruce Lay
+ * @author Edmund Chee
+ * @author Joules James
+ * 
+ * @version 0.5
+ * @since 2020-02-14
+ */
 public class Executable {
-    private static final double WHEEL_DIAMETER = 56; // The diameter (mm) of the wheels
-    private static final double AXLE_LENGTH = 120; // The distance (mm) your two driven wheels
+	
+	/**
+	 * @param WHEEL_DIAMETER The diameter (mm) of the wheels.
+	 * @param AXLE_LENGTH The distance (mm) your two driven wheels.
+	 * @param START_UP Contains the string file name of the start up sound.
+	 */
+    private static final double WHEEL_DIAMETER = 56;
+    private static final double AXLE_LENGTH = 120;
     private static final String START_UP = "StartUpSound.wav";
-    
+
+    /**
+     * Displays the program and version information until a button is pressed.
+     * Also shows group members names.
+     */
     public static void firstDisplay() {
         LCD.drawString("Emotional Maze Solver",2,2);
         LCD.drawString("Version 0.1",2,3);
@@ -39,13 +60,19 @@ public class Executable {
         Button.ENTER.waitForPressAndRelease();
         LCD.clear();
     }
-
+    
+    /**
+     * This is the main body of the code.
+     * It is only used to initialise sensors motors and arbitrators as well as call other methods.
+     */
     public static void main(String[] args) {
 
         NXTSoundSensor ss = new NXTSoundSensor(SensorPort.S1);
         SampleProvider sound = ss.getDBAMode();
         EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S2);
-        SampleProvider colour = cs.getRedMode();
+        SampleProvider color = cs.getRedMode();
+        
+        float lightLevels[] = SensorCalibration.calibrateColorSensor(color);
 
         BaseRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
         Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, WHEEL_DIAMETER).offset(AXLE_LENGTH/2);
@@ -55,9 +82,13 @@ public class Executable {
         Chassis chassis = new WheeledChassis(new Wheel[]{rightWheel,leftWheel},WheeledChassis.TYPE_DIFFERENTIAL);
         MovePilot pilot = new MovePilot(chassis);
         Navigator navi = new Navigator(pilot);
+        pilot.setAngularAcceleration(100);
+        pilot.setAngularSpeed(20);
         
-        Sound.setVolume(100);
-        
+        Sound.setVolume(100);      
+
+        BaseRegulatedMotor sensorMotor = new EV3MediumRegulatedMotor(MotorPort.C);
+       
         firstDisplay();
   
         (new Remote()).start();
@@ -65,14 +96,17 @@ public class Executable {
         Behavior EscapeExit = new EscapeExit(navi);
         Behavior LowBattery = new LowBattery(navi);
         Behavior Remote = new RemoteBehaviour(pilot);
+        Behavior FollowLeftWall = new LineFollower(navi, color, lightLevels);
 
-		Behavior[] behaviorArray = {Remote, EscapeExit, LowBattery};
+        Behavior[] behaviorArray = {FollowLeftWall, Remote, EscapeExit, LowBattery};
+        (new PlaySound(START_UP)).start();
 
         Arbitrator arbitrator = new Arbitrator(behaviorArray);
         arbitrator.go();
 
         ss.close();
         cs.close();
+        sensorMotor.close();
         System.exit(0);
     }
 }

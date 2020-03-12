@@ -61,7 +61,6 @@ public class RemoteBehaviour implements Behavior{
 
 	@Override
 	public void suppress() {
-		// TODO Auto-generated method stub
 	}
 
 }

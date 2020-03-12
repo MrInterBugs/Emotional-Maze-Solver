@@ -21,11 +21,6 @@ public class Remote extends Thread {
 	private static BufferedInputStream in = null;
 	private static OutputStream out = null;
 	private static String input = "";
-//	private MovePilot pilot;
-	
-//	public Remote(MovePilot pilot) {
-//		this.pilot = pilot;
-//	}
 	
 	public static String getInput() {
 		return input;
@@ -41,11 +36,8 @@ public class Remote extends Thread {
 		LCD.drawString("Waiting  ", 0, 0);
 		SocketAddress sa = new InetSocketAddress(IPaddress, port);
 		try {
-			connection.connect(sa, 1500); // Timeout possible
+			connection.connect(sa, 1500);
 		} catch (Exception ex) {
-			// This connection fail is just ignored - we were probably not trying to connect because there was no
-			// Android device
-			// Could be Timeout or just a normal IO exception
 			LCD.drawString(ex.getMessage(), 0,6);
 			connection = null;
 		}
@@ -65,7 +57,6 @@ public class Remote extends Thread {
 		while (connection != null) {
 			try {
 				if (in.available() > 0) {
-					String oldInput = input;
 					LCD.drawString("Chars read: ", 0, 2);
 					LCD.drawInt(in.available(), 12, 2);
 					int read = in.read(buffer, 0, MAX_READ);
@@ -76,12 +67,11 @@ public class Remote extends Thread {
 					out.write("Reply:".getBytes(), 0, 6);
 					out.write(buffer, 0, read);
 				}
-				sleep(1);
+				sleep(5);
 				input = "";
 			} catch (IOException ignored) {
-		} catch (InterruptedException e) {
-				e.printStackTrace();
+		} catch (InterruptedException ignored) {
 			}
-	}
-}
+		}
+    }
 }

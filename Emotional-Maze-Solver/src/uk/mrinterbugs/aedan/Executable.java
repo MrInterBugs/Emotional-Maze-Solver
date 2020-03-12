@@ -82,6 +82,7 @@ public class Executable {
         Chassis chassis = new WheeledChassis(new Wheel[]{rightWheel,leftWheel},WheeledChassis.TYPE_DIFFERENTIAL);
         MovePilot pilot = new MovePilot(chassis);
         Navigator navi = new Navigator(pilot);
+        
         pilot.setAngularAcceleration(100);
         pilot.setAngularSpeed(20);
         
@@ -99,6 +100,7 @@ public class Executable {
         Behavior FollowLeftWall = new LineFollower(navi, color, lightLevels);
 
         Behavior[] behaviorArray = {FollowLeftWall, Remote, EscapeExit, LowBattery};
+        
         (new PlaySound(START_UP)).start();
 
         Arbitrator arbitrator = new Arbitrator(behaviorArray);

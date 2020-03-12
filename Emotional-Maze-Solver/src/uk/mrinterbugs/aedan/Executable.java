@@ -43,39 +43,6 @@ public class Executable {
         LCD.clear();
     }
     
-    private static float[] calibrateColorSensor(SampleProvider colorSampler) {
-    	String[] calibrations = new String[]{"white", "black"};
-    	float[] lightLevels = new float[calibrations.length];
-    	
-    	int index = 0;
-    	for(String calibration: calibrations) {
-    		LCD.drawString("Place sensor on", 2, 2);
-    		LCD.drawString(calibration + " surface", 2, 3);
-    		
-    		LCD.drawString("Press enter", 2, 4);
-    		LCD.drawString("to continue", 2, 5);
-    		Button.ENTER.waitForPressAndRelease();
-    		LCD.clear();
-    		LCD.drawString("Calibrating", 2, 2);
-    		lightLevels[index] = averageReadings(colorSampler);
-    		index++;
-    		LCD.clear();
-    	}
-    	
-    	return lightLevels;
-    }
-    
-    private static float averageReadings(SampleProvider sampleProvider) {
-    	float average = 0;
-    	int readings = 0;
-    	float[] reading = new float[1];
-    	for(int i=0; i<100; i++) {
-    		sampleProvider.fetchSample(reading, 0);
-    		readings++;
-    		average = average + (reading[0] - average) / readings;
-    	}
-    	return average;
-    }
 
     public static void main(String[] args) {
 
@@ -86,7 +53,7 @@ public class Executable {
         
         EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S2);
         SampleProvider color = cs.getRedMode();
-        float lightLevels[] = calibrateColorSensor(color);
+        float lightLevels[] = SensorCalibration.calibrateColorSensor(color);
         
         //EV3TouchSensor ts = new EV3TouchSensor(SensorPort.S4);
         //SampleProvider touch = ts.getTouchMode();
@@ -104,7 +71,6 @@ public class Executable {
 
         firstDisplay();
 
-        Behavior MoveForward = new MoveForward(navi);
         Behavior EscapeExit = new EscapeExit(navi);
         Behavior LowBattery = new LowBattery(navi);
         Behavior LineFollower = new LineFollower(navi, color, lightLevels);

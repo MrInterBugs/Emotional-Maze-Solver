@@ -67,17 +67,14 @@ public class TremauxAlgorithm implements Behavior {
 		    Delay.msDelay(100);
 	    	
 		    sensorMotor.rotateTo(-90, false);
-		    sensorMotor.waitComplete();
 		    color.fetchSample(samples, FRONT);
 		    Delay.msDelay(100);
 		    
 		    sensorMotor.rotateTo(-180, false);
-		    sensorMotor.waitComplete();
 		    color.fetchSample(samples, RIGHT);
 		    Delay.msDelay(100);
 		    
 		    sensorMotor.rotateTo(0, false);
-		    sensorMotor.waitComplete();
 		    break;
 	    }
     }

@@ -8,26 +8,29 @@ import lejos.robotics.subsumption.Behavior;
 import lejos.utility.Delay;
 
 public class MoveForward implements Behavior {
-    private Navigator navi;
+	private Navigator navi;
     private BaseRegulatedMotor sensorMotor;
     private float[] samples;
     private SampleProvider color;
-    private boolean suppressed;
     private Coord coord;
     
-    private final int LEFT = 0;
-    private final int FRONT = 1;
-    private final int RIGHT = 2;
+    private static final int LEFT = 0;
+    private static final int FRONT = 1;
+    private static final int RIGHT = 2;
     
-    private final int NOTVISITED = -1;
-    private final int BEENVISITED = 0;
-    private final int MARKEDOFF = 1;
+    private static final int NOTVISITED = -1;
+    private static final int BEENVISITED = 0;
+    private static final int MARKEDOFF = 1;
     
-    private final int DISTANCEMOVE = 10;
-    private final float DARK = 0.2f;
+    private static final int MOVE = 10;
+    private static final float DARK = 0.2f;
 
-    public MoveForward(Navigator navi) {
+    public MoveForward(Navigator navi, BaseRegulatedMotor sensorMotor, SampleProvider color) {
         this.navi = navi;
+        this.sensorMotor = sensorMotor;
+        this.samples = new float[3];
+        this.color = color;
+        this.coord = new Coord();    
     }
 
     @Override
@@ -77,6 +80,13 @@ public class MoveForward implements Behavior {
     	int haveFront = 0;
     	int haveRight = 0;
     	
+    	int leftAvailable = 0;
+    	int frontAvailable = 0;
+    	int rightAvailable = 0;
+    	
+    	int currentHeading = 0;
+    	int currentX = 0;
+    	int currentY = 0;
     	
     	float tempHeading = Float.parseFloat(String.valueOf(this.navi.getPoseProvider().getPose().getHeading()));
     	int tempX = (int)(Float.parseFloat(String.valueOf(this.navi.getPoseProvider().getPose().getX())));
@@ -119,30 +129,32 @@ public class MoveForward implements Behavior {
         	break;
     	}
     	
-    	int currentHeading = 0;
-    	int currentX = tempX;
-    	int currentY = tempY;
+    	currentX = tempX;
+    	currentY = tempY;
     	
     	if (tempHeading < 5 && tempHeading > -5) {
     		currentHeading = 0;
         	if (samples[this.LEFT] <= DARK) {
         		haveLeft = 1;
-        		if (coord.checkvisited(currentX, currentY-10)==NOTVISITED) {
+        		if (coord.checkvisited(currentX, currentY-MOVE)==NOTVISITED) {
         			available++;
+        			leftAvailable++;
         		}
         		paths++;
         	}
         	if (samples[this.FRONT] <= DARK) {
         		haveFront = 1;
-        		if (coord.checkvisited(currentX+10, currentY)==NOTVISITED) {
+        		if (coord.checkvisited(currentX+MOVE, currentY)==NOTVISITED) {
         			available++;
+        			frontAvailable++;
         		}
         		paths++;
         	}
         	if (samples[this.RIGHT] <= DARK) {
         		haveRight = 1;
-        		if (coord.checkvisited(currentX, currentY+10)==NOTVISITED) {
+        		if (coord.checkvisited(currentX, currentY+MOVE)==NOTVISITED) {
         			available++;
+        			rightAvailable++;
         		}
         		paths++;
         	}
@@ -152,22 +164,25 @@ public class MoveForward implements Behavior {
     		currentHeading = 90;
         	if (samples[this.LEFT] <= DARK) {
         		haveLeft = 1;
-        		if (coord.checkvisited(currentX+10, currentY)==NOTVISITED) {
+        		if (coord.checkvisited(currentX+MOVE, currentY)==NOTVISITED) {
         			available++;
+        			leftAvailable++;
         		}
         		paths++;
         	}
         	if (samples[this.FRONT] <= DARK) {
         		haveFront = 1;
-        		if (coord.checkvisited(currentX, currentY+10)==NOTVISITED) {
+        		if (coord.checkvisited(currentX, currentY+MOVE)==NOTVISITED) {
         			available++;
+        			frontAvailable++;
         		}
         		paths++;
         	}
         	if (samples[this.RIGHT] <= DARK) {
         		haveRight = 1;
-        		if (coord.checkvisited(currentX-10, currentY)==NOTVISITED) {
+        		if (coord.checkvisited(currentX-MOVE, currentY)==NOTVISITED) {
         			available++;
+        			rightAvailable++;
         		}
         		paths++;
         	}
@@ -177,22 +192,25 @@ public class MoveForward implements Behavior {
     		currentHeading = -90;
         	if (samples[this.LEFT] <= DARK) {
         		haveLeft = 1;
-        		if (coord.checkvisited(currentX-10, currentY)==NOTVISITED) {
+        		if (coord.checkvisited(currentX-MOVE, currentY)==NOTVISITED) {
         			available++;
+        			leftAvailable++;
         		}
         		paths++;
         	}
         	if (samples[this.FRONT] <= DARK) {
         		haveFront = 1;
-        		if (coord.checkvisited(currentX, currentY-10)==NOTVISITED) {
+        		if (coord.checkvisited(currentX, currentY-MOVE)==NOTVISITED) {
         			available++;
+        			frontAvailable++;
         		}
         		paths++;
         	}
         	if (samples[this.RIGHT] <= DARK) {
         		haveRight = 1;
-        		if (coord.checkvisited(currentX+10, currentY)==NOTVISITED) {
+        		if (coord.checkvisited(currentX+MOVE, currentY)==NOTVISITED) {
         			available++;
+        			rightAvailable++;
         		}
         		paths++;
         	}
@@ -202,28 +220,31 @@ public class MoveForward implements Behavior {
     		currentHeading = 180;
         	if (samples[this.LEFT] <= DARK) {
         		haveLeft = 1;
-        		if (coord.checkvisited(currentX, currentY+10)==NOTVISITED) {
+        		if (coord.checkvisited(currentX, currentY+MOVE)==NOTVISITED) {
         			available++;
+        			leftAvailable++;
         		}
         		paths++;
         	}
         	if (samples[this.FRONT] <= DARK) {
         		haveFront = 1;
-        		if (coord.checkvisited(currentX-10, currentY)==NOTVISITED) {
+        		if (coord.checkvisited(currentX-MOVE, currentY)==NOTVISITED) {
         			available++;
+        			frontAvailable++;
         		}
         		paths++;
         	}
         	if (samples[this.RIGHT] <= DARK) {
         		haveRight = 1;
-        		if (coord.checkvisited(currentX, currentY-10)==NOTVISITED) {
+        		if (coord.checkvisited(currentX, currentY-MOVE)==NOTVISITED) {
         			available++;
+        			rightAvailable++;
         		}
         		paths++;
         	}
     	}
     	
-    	return new int[] {currentX, currentY, currentHeading, paths, available, haveLeft, haveFront, haveRight};
+    	return new int[] {currentX, currentY, currentHeading, paths, available, haveLeft, haveFront, haveRight, leftAvailable, frontAvailable, rightAvailable};
     	
     }
     
@@ -236,6 +257,9 @@ public class MoveForward implements Behavior {
     	boolean haveLeft = (variables[5] == 1) ? true:false;
     	boolean haveFront = (variables[6] == 1) ? true:false;
     	boolean haveRight = (variables[7] == 1) ? true:false;
+    	boolean leftAvailable = (variables[8] == 1) ? true:false;
+    	boolean frontAvailable = (variables[9] == 1) ? true:false;
+    	boolean rightAvailable = (variables[MOVE] == 1) ? true:false;
     	
     	
     	int random = 0;
@@ -246,160 +270,179 @@ public class MoveForward implements Behavior {
         		if (available == 3) { //choose one from the 3 paths
         			random = (int)(Math.random()*3);
         			if (random == LEFT) { //left or
-        				coord.add(currentX, currentY-10);
-        				navi.goTo(new Waypoint(currentX, currentY-10)); //check if adjustment is needed before that
+        				coord.add(currentX, currentY-MOVE);
+        				navi.goTo(new Waypoint(currentX, currentY-MOVE)); //check if adjustment is needed before that
         			} else if (random == FRONT) { //front or
-        				coord.add(currentX+10, currentY);
-        				navi.goTo(new Waypoint(currentX+10, currentY)); //for now just put it in like that
+        				coord.add(currentX+MOVE, currentY);
+        				navi.goTo(new Waypoint(currentX+MOVE, currentY)); //for now just put it in like that
         			} else { //right
-        				coord.add(currentX, currentY+10);
-        				navi.goTo(new Waypoint(currentX, currentY+10));
+        				coord.add(currentX, currentY+MOVE);
+        				navi.goTo(new Waypoint(currentX, currentY+MOVE));
         			}
-        			coord.add(currentX-10, currentY); //add previous
+        			coord.add(currentX-MOVE, currentY); //add previous
         		} else if (available == 2) { //choose one not visited
         			random = (int)(Math.random()*3);
         			if (random == LEFT) { //left if available or
-        				if (coord.checkvisited(currentX, currentY-10) == NOTVISITED) {
-        					coord.add(currentX, currentY-10);
-        					navi.goTo(new Waypoint(currentX, currentY-10));
-        				} else if (coord.checkvisited(currentX+10, currentY) ==NOTVISITED) { //check front
-        					coord.add(currentX+10, currentY);
-        				    navi.goTo(new Waypoint(currentX+10, currentY));
+        				if (leftAvailable == true) {
+        					coord.add(currentX, currentY-MOVE);
+        					navi.goTo(new Waypoint(currentX, currentY-MOVE));
+        				} else if (frontAvailable == true) { //check front
+        					coord.add(currentX+MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX+MOVE, currentY));
         				} else { //then it should be right
-        					coord.add(currentX, currentY+10); 
-            				navi.goTo(new Waypoint(currentX, currentY+10));
+        					coord.add(currentX, currentY+MOVE); 
+            				navi.goTo(new Waypoint(currentX, currentY+MOVE));
         				}
         			}
         			if (random == FRONT) { //front if available or
-        				if (coord.checkvisited(currentX+10, currentY) == NOTVISITED) {
-        					coord.add(currentX+10, currentY);
-        				    navi.goTo(new Waypoint(currentX+10, currentY));
-        				} else if (coord.checkvisited(currentX, currentY-10) == NOTVISITED) {//check right
-        					coord.add(currentX, currentY-10);
-        					navi.goTo(new Waypoint(currentX, currentY-10));
+        				if (frontAvailable == true) {
+        					coord.add(currentX+MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX+MOVE, currentY));
+        				} else if (leftAvailable == true) {//check right
+        					coord.add(currentX, currentY-MOVE);
+        					navi.goTo(new Waypoint(currentX, currentY-MOVE));
         				} else { //then should be right
-        					coord.add(currentX, currentY+10);
-        				    navi.goTo(new Waypoint(currentX, currentY+10));
+        					coord.add(currentX, currentY+MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY+MOVE));
         				}
         			} 
         			if (random == RIGHT) { //right
-        				if (coord.checkvisited(currentX, currentY+10) == NOTVISITED) {
-        					coord.add(currentX, currentY+10);
-        				    navi.goTo(new Waypoint(currentX, currentY+10));
-        				} else if (coord.checkvisited(currentX, currentY-10) == NOTVISITED) { //check left
-            				coord.add(currentX, currentY-10);
-            				navi.goTo(new Waypoint(currentX, currentY-10));
-        				} else { //then should be front
-        					coord.add(currentX+10, currentY);
-        				    navi.goTo(new Waypoint(currentX+10, currentY));
+        				if (rightAvailable == true) {
+        					coord.add(currentX, currentY+MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY+MOVE));
+        				} else if (leftAvailable) { //check left
+            				coord.add(currentX, currentY-MOVE);
+            				navi.goTo(new Waypoint(currentX, currentY-MOVE));
+        				} else { //then should be front';
+        					coord.add(currentX+MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX+MOVE, currentY));
         				}
         			}
-        			coord.markoff(currentX-10, currentY); //mark previous twice
+        			coord.markoff(currentX-MOVE, currentY); //mark previous twice
         		} else if (available == 1) {  //go back
-        			coord.add(currentX-10, currentY); //add previous
-        			coord.markoff(currentX-10, currentY); //mark previous twice
-        			navi.goTo(new Waypoint(currentX-10, currentY)); 
+        			coord.add(currentX-MOVE, currentY); //add previous
+        			coord.markoff(currentX-MOVE, currentY); //mark previous twice
+        			navi.goTo(new Waypoint(currentX-MOVE, currentY)); 
         		} else { //if none available go back
-        			coord.add(currentX-10, currentY); //add previous
-        			coord.markoff(currentX-10, currentY); //mark previous twice
-        			navi.goTo(new Waypoint(currentX-10, currentY));
+        			coord.add(currentX-MOVE, currentY); //add previous
+        			coord.markoff(currentX-MOVE, currentY); //mark previous twice
+        			navi.goTo(new Waypoint(currentX-MOVE, currentY));
         		}
         		break;
         	case 2:
         		if (available == 2) {
         			//check where are the paths first
-        			if (haveLeft) { //if there is left
-        				if (haveFront) { //either front
-        					random = (int)(Math.random()*2);
-        					if (random == LEFT) { //either choose left
-            					coord.add(currentX, currentY-10);
-            				    navi.goTo(new Waypoint(currentX, currentY-10));
-        					} else { //or else choose front
-            					coord.add(currentX+10, currentY);
-            				    navi.goTo(new Waypoint(currentX+10, currentY));
-        					}
-        				} else { //or else right as the second path
-        					random = (int)(Math.random()*2);
-        					if (random == LEFT) { //either choose left
-            					coord.add(currentX, currentY-10);
-            				    navi.goTo(new Waypoint(currentX, currentY-10));
-        					} else { //or else choose right
-            					coord.add(currentX, currentY+10);
-            				    navi.goTo(new Waypoint(currentX, currentY+10));
-        					}        					
-        				}
-        			
-        			}
-        			
-        			if (haveFront) { //or else it's only just front and right as paths
+        			if (haveLeft && haveFront) { //if there is left
+        				random = (int)(Math.random()*2);
+    					if (random == LEFT) { //either choose left
+        					coord.add(currentX, currentY-MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY-MOVE));
+    					} else { //or else choose front
+        					coord.add(currentX+MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX+MOVE, currentY));
+    					}
+        			} else if (haveLeft && haveRight) { //or else right as the second path
+    					random = (int)(Math.random()*2);
+    					if (random == LEFT) { //either choose left
+        					coord.add(currentX, currentY-MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY-MOVE));
+    					} else { //or else choose right
+        					coord.add(currentX, currentY+MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY+MOVE));
+    					}     
+   					
+        			} else { //or else it's only just front and right as paths
         				random = 1 + (int)(Math.random()*2);
         				if (random == FRONT) {
-        					coord.add(currentX+10, currentY);
-        				    navi.goTo(new Waypoint(currentX+10, currentY));
+        					coord.add(currentX+MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX+MOVE, currentY));
         				} else { //then right
-        					coord.add(currentX, currentY+10);
-        				    navi.goTo(new Waypoint(currentX, currentY+10));
-        					
+        					coord.add(currentX, currentY+MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY+MOVE));
         				}
         			}
-        			coord.add(currentX-10, currentY);
-        			
+        			coord.add(currentX-MOVE, currentY);		
         		} else if (available == 1) {
-        			if (haveLeft && coord.checkvisited(currentX, currentY-10)==NOTVISITED) { //left is valid path and available
-        				coord.add(currentX, currentY-10);
-        				navi.goTo(new Waypoint(currentX, currentY-10));
-        			} else if (haveFront && coord.checkvisited(currentX+10, currentY)==NOTVISITED) { //front is valid path and available
-        				coord.add(currentX+10, currentY);
-        				navi.goTo(new Waypoint(currentX+10, currentY));
+        			if (haveLeft && leftAvailable) { //left is valid path and available
+        				coord.add(currentX, currentY-MOVE);
+        				navi.goTo(new Waypoint(currentX, currentY-MOVE));
+        			} else if (haveFront && frontAvailable) { //front is valid path and available
+        				coord.add(currentX+MOVE, currentY);
+        				navi.goTo(new Waypoint(currentX+MOVE, currentY));
         			} else { // else just right valid and available
-        				coord.add(currentX, currentY+10);
-        				navi.goTo(new Waypoint(currentX, currentY+10));
+        				coord.add(currentX, currentY+MOVE);
+        				navi.goTo(new Waypoint(currentX, currentY+MOVE));
         			}
-        			coord.markoff(currentX-10, currentY);
+        			coord.markoff(currentX-MOVE, currentY);
         		} else { //no availability
-        			if (haveLeft && coord.checkvisited(currentX, currentY-10)==BEENVISITED) { //left is valid path and visited once
-        				coord.markoff(currentX, currentY-10);
-        				navi.goTo(new Waypoint(currentX, currentY-10));
-        			} else if (haveFront && coord.checkvisited(currentX+10, currentY)==BEENVISITED) { //front is valid path and visited once
-        				coord.markoff(currentX+10, currentY);
-        				navi.goTo(new Waypoint(currentX+10, currentY));
-        			} else { // else just right valid and visited once
-        				coord.markoff(currentX, currentY+10);
-        				navi.goTo(new Waypoint(currentX, currentY+10));
+        			//check for markedoff path first
+        			if (coord.checkvisited(currentX, currentY-MOVE)==MARKEDOFF || coord.checkvisited(currentX+MOVE, currentY)==MARKEDOFF || coord.checkvisited(currentX, currentY+MOVE)==MARKEDOFF) {
+            			if (haveLeft && haveFront) {
+            				if (coord.checkvisited(currentX, currentY-MOVE)==MARKEDOFF) { //if left markedoff
+            					coord.markoff(currentX+MOVE, currentY); //mark front
+            					navi.goTo(new Waypoint(currentX+MOVE, currentY)); //go front
+            						
+            				} else {
+            					coord.markoff(currentX, currentY-MOVE); //if not, mark left
+            					navi.goTo(new Waypoint(currentX, currentY-MOVE)); //go left
+            				}
+            			} 
+            			else if (haveLeft && haveRight) {
+            				if (coord.checkvisited(currentX, currentY-MOVE)==MARKEDOFF) { //if left markedoff
+        						coord.markoff(currentX, currentY+MOVE); //mark right
+        						navi.goTo(new Waypoint(currentX, currentY+MOVE)); //go right
+        					} else {
+        						coord.markoff(currentX, currentY-MOVE); //if not, mark left 
+        						navi.goTo(new Waypoint(currentX, currentY-MOVE)); //go left
+        					}
+            				
+            			} 
+            			else { //only front and right have path
+            				if (coord.checkvisited(currentX+MOVE, currentY)==MARKEDOFF) { //if front markedoff
+        						coord.markoff(currentX, currentY-MOVE); //mark right
+        						navi.goTo(new Waypoint(currentX, currentY-MOVE)); //go right
+            				} else {
+        						coord.markoff(currentX+MOVE, currentY); //if not, mark front
+        						navi.goTo(new Waypoint(currentX+MOVE, currentY)); //go front
+            				}
+            			}
+            			coord.markoff(currentX-MOVE, currentY);
+        			} else {
+        				coord.add(currentX-MOVE, currentY); //add previous
+        				coord.markoff(currentX-MOVE, currentY); //markoff previous
+        				navi.goTo(new Waypoint(currentX-MOVE,currentY)); //go to previous
         			}
-        			coord.add(currentX-10, currentY);
-        			coord.markoff(currentX-10, currentY);
+        			break;
         		}
         	case 1:
         		if (available == 1) {
         			if (haveFront) {
-        				navi.goTo(new Waypoint(currentX+10, currentY));
+        				navi.goTo(new Waypoint(currentX+MOVE, currentY)); //just go front
         			} else if (haveLeft) {
-        				coord.add(currentX, currentY-10);
-        				navi.goTo(new Waypoint(currentX, currentY-10));
-        				coord.add(currentX-10, currentY);
+        				coord.add(currentX, currentY-MOVE); //add left
+        				navi.goTo(new Waypoint(currentX, currentY-MOVE)); //go left
+        				coord.add(currentX-MOVE, currentY); //add previous
         			} else { //else have Right as path
-        				coord.add(currentX, currentY+10);
-        				navi.goTo(new Waypoint(currentX, currentY+10));
-        				coord.add(currentX-10, currentY);
+        				coord.add(currentX, currentY+MOVE); //add right
+        				navi.goTo(new Waypoint(currentX, currentY+MOVE)); //go right
+        				coord.add(currentX-MOVE, currentY); //add previous
         			}
         		} else {
         			if (haveFront) { //if front is the path
-        				navi.goTo(new Waypoint(currentX+10, currentY));
-        			}
-        			if (haveLeft) { //either left is the path
-        				coord.markoff(currentX, currentY-10);
-        				navi.goTo(new Waypoint(currentX, currentY-10));
-        				coord.markoff(currentX-10, currentY);
+        				navi.goTo(new Waypoint(currentX+MOVE, currentY)); //just go front
+        			} else if (haveLeft) { //either left is the path
+        				coord.markoff(currentX, currentY-MOVE);
+        				navi.goTo(new Waypoint(currentX, currentY-MOVE));
+        				coord.markoff(currentX-MOVE, currentY);
         			} else { //else it's right as path!
-        				coord.markoff(currentX, currentY+10);
-        				navi.goTo(new Waypoint(currentX, currentY+10));
-        				coord.markoff(currentX-10, currentY);
+        				coord.markoff(currentX, currentY+MOVE);
+        				navi.goTo(new Waypoint(currentX, currentY+MOVE));
+        				coord.markoff(currentX-MOVE, currentY);
         			}
         		}
         		break;
         	default:
-        		navi.goTo(new Waypoint(currentX-10, currentY));
+        		navi.goTo(new Waypoint(currentX-MOVE, currentY)); //just go back if dead end
         		break;	
         		
         	}     	
@@ -408,93 +451,553 @@ public class MoveForward implements Behavior {
     	if (currentHeading == 90) {
         	switch (paths) {
         	case 3:
-        		if (available == 3) {
-        			
-        			
-        		} else if (available == 2) {
-        			
-        		} else if (available == 1) {
-        		 	
-        		} else {
-        			
+        		if (available == 3) { //choose one from the 3 paths
+        			random = (int)(Math.random()*3);
+        			if (random == LEFT) { //left or
+        				coord.add(currentX+MOVE, currentY); //add left
+        				navi.goTo(new Waypoint(currentX+MOVE, currentY)); //check if adjustment is needed before that
+        			} else if (random == FRONT) { //front or
+        				coord.add(currentX, currentY+MOVE);
+        				navi.goTo(new Waypoint(currentX, currentY+MOVE)); //for now just put it in like that
+        			} else { //right
+        				coord.add(currentX-MOVE, currentY);
+        				navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        			}
+        			coord.add(currentX, currentY-MOVE); //add previous
+        		} else if (available == 2) { //choose one not visited
+        			random = (int)(Math.random()*3);
+        			if (random == LEFT) { //left if available or
+        				if (leftAvailable == true) {
+        					coord.add(currentX+MOVE, currentY); //add left
+        					navi.goTo(new Waypoint(currentX+MOVE, currentY));
+        				} else if (frontAvailable == true) { //check front
+        					coord.add(currentX, currentY+MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY+MOVE));
+        				} else { //then it should be right
+        					coord.add(currentX-MOVE, currentY); 
+            				navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        				}
+        			}
+        			if (random == FRONT) { //front if available or
+        				if (frontAvailable == true) {
+        					coord.add(currentX, currentY+MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY+MOVE));
+        				} else if (leftAvailable == true) {//check right
+        					coord.add(currentX+MOVE, currentY);
+        					navi.goTo(new Waypoint(currentX+MOVE, currentY));
+        				} else { //then should be right
+        					coord.add(currentX-MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        				}
+        			} 
+        			if (random == RIGHT) { //right
+        				if (rightAvailable == true) {
+        					coord.add(currentX-MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        				} else if (leftAvailable) { //check left
+            				coord.add(currentX+MOVE, currentY);
+            				navi.goTo(new Waypoint(currentX+MOVE, currentY));
+        				} else { //then should be front';
+        					coord.add(currentX, currentY+MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY+MOVE));
+        				}
+        			}
+        			coord.markoff(currentX, currentY-MOVE); //mark previous off
+        		} else if (available == 1) {  //go back
+        			coord.add(currentX, currentY-MOVE); //add previous
+        			coord.markoff(currentX, currentY-MOVE); //mark previous off
+        			navi.goTo(new Waypoint(currentX, currentY-MOVE)); //go previous/back
+        		} else { //if none available go back
+        			coord.add(currentX, currentY-MOVE); //add previous
+        			coord.markoff(currentX, currentY-MOVE); //mark previous off
+        			navi.goTo(new Waypoint(currentX, currentY-MOVE));
         		}
         		break;
         	case 2:
         		if (available == 2) {
-        			
+        			//check where are the paths first
+        			if (haveLeft && haveFront) { //if there is left
+        				random = (int)(Math.random()*2);
+    					if (random == LEFT) { //either choose left
+        					coord.add(currentX+MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX+MOVE, currentY));
+    					} else { //or else choose front
+        					coord.add(currentX, currentY+MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY+MOVE));
+    					}
+        			} else if (haveLeft && haveRight) { //or else right as the second path
+    					random = (int)(Math.random()*2);
+    					if (random == LEFT) { //either choose left
+        					coord.add(currentX+MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX+MOVE, currentY));
+    					} else { //or else choose right
+        					coord.add(currentX-MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX-MOVE, currentY));
+    					}     
+   					
+        			} else { //or else it's only just front and right as paths
+        				random = 1 + (int)(Math.random()*2);
+        				if (random == FRONT) {
+        					coord.add(currentX, currentY+MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY+MOVE));
+        				} else { //then right
+        					coord.add(currentX-MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        				}
+        			}
+        			coord.add(currentX, currentY-MOVE);		
         		} else if (available == 1) {
-        			
+        			if (haveLeft && leftAvailable) { //left is valid path and available
+        				coord.add(currentX+MOVE, currentY);
+        				navi.goTo(new Waypoint(currentX+MOVE, currentY));
+        			} else if (haveFront && frontAvailable) { //front is valid path and available
+        				coord.add(currentX, currentY+MOVE);
+        				navi.goTo(new Waypoint(currentX, currentY+MOVE));
+        			} else { // else just right valid and available
+        				coord.add(currentX-MOVE, currentY);
+        				navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        			}
+        			coord.markoff(currentX, currentY-MOVE);
+        		} else { //no availability
+        			//check for markedoff path first
+        			if (coord.checkvisited(currentX+MOVE, currentY)==MARKEDOFF || coord.checkvisited(currentX, currentY+MOVE)==MARKEDOFF || coord.checkvisited(currentX-MOVE, currentY)==MARKEDOFF) {
+            			if (haveLeft && haveFront) {
+            				if (coord.checkvisited(currentX+MOVE, currentY)==MARKEDOFF) { //if left markedoff
+            					coord.markoff(currentX, currentY+MOVE); //mark front
+            					navi.goTo(new Waypoint(currentX, currentY+MOVE)); //go front
+            						
+            				} else {
+            					coord.markoff(currentX+MOVE, currentY); //if not, mark left
+            					navi.goTo(new Waypoint(currentX+MOVE, currentY)); //go left
+            				}
+            			} 
+            			else if (haveLeft && haveRight) {
+            				if (coord.checkvisited(currentX+MOVE, currentY)==MARKEDOFF) { //if left markedoff
+        						coord.markoff(currentX-MOVE, currentY); //mark right
+        						navi.goTo(new Waypoint(currentX-MOVE, currentY)); //go right
+        					} else {
+            					coord.markoff(currentX+MOVE, currentY); //if not, mark left
+            					navi.goTo(new Waypoint(currentX+MOVE, currentY)); //go left
+        					}
+            				
+            			} 
+            			else { //only front and right have path
+            				if (coord.checkvisited(currentX, currentY+MOVE)==MARKEDOFF) { //if front markedoff
+        						coord.markoff(currentX-MOVE, currentY); //mark right
+        						navi.goTo(new Waypoint(currentX-MOVE, currentY)); //go right
+            				} else {
+            					coord.markoff(currentX, currentY+MOVE); //mark front
+            					navi.goTo(new Waypoint(currentX, currentY+MOVE)); //go front
+            				}
+            			}
+            			coord.markoff(currentX, currentY-MOVE);
+        			} else {
+        				coord.add(currentX, currentY-MOVE); //add previous
+        				coord.markoff(currentX, currentY-MOVE); //markoff previous
+        				navi.goTo(new Waypoint(currentX,currentY-MOVE)); //go back/previous
+        			}
+        			break;
         		}
         	case 1:
         		if (available == 1) {
-        			
+        			if (haveFront) {
+        				navi.goTo(new Waypoint(currentX, currentY+MOVE)); //just go front
+        			} else if (haveLeft) {
+        				coord.add(currentX+MOVE, currentY); //add left
+        				navi.goTo(new Waypoint(currentX+MOVE, currentY));
+        				coord.add(currentX, currentY-MOVE); //add previous 
+        			} else { //else have Right as path
+        				coord.add(currentX-MOVE, currentY);
+        				navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        				coord.add(currentX, currentY-MOVE); //add previous
+        			}
         		} else {
-        			
+        			if (haveFront) { //if front is the path
+        				navi.goTo(new Waypoint(currentX, currentY+MOVE)); //just go front
+        			} else if (haveLeft) { //either left is the path
+        				coord.markoff(currentX+MOVE, currentY);
+        				navi.goTo(new Waypoint(currentX+MOVE, currentY));
+        				coord.markoff(currentX, currentY-MOVE);
+        			} else { //else it's right as path!
+        				coord.markoff(currentX-MOVE, currentY);
+        				navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        				coord.markoff(currentX, currentY-MOVE);
+        			}
         		}
+        		break;
         	default:
+        		navi.goTo(new Waypoint(currentX, currentY-MOVE)); //just go back if dead end
+        		break;	
         		
-        		
-        	}
+        	}  
     	}
     	
     	if (currentHeading == 180) {
         	switch (paths) {
         	case 3:
-        		if (available == 3) {
-        			
-        			
-        		} else if (available == 2) {
-        			
-        		} else if (available == 1) {
-        			
-        		} else {
-        			
+        		if (available == 3) { //choose one from the 3 paths
+        			random = (int)(Math.random()*3);
+        			if (random == LEFT) { //left or
+        				coord.add(currentX, currentY+MOVE); //add left
+        				navi.goTo(new Waypoint(currentX, currentY+MOVE)); //check if adjustment is needed before that
+        			} else if (random == FRONT) { //front or
+        				coord.add(currentX-MOVE, currentY);
+        				navi.goTo(new Waypoint(currentX-MOVE, currentY)); //for now just put it in like that
+        			} else { //right
+        				coord.add(currentX, currentY-MOVE);
+        				navi.goTo(new Waypoint(currentX, currentY-MOVE));
+        			}
+        			coord.add(currentX+MOVE, currentY); //add previous
+        		} else if (available == 2) { //choose one not visited
+        			random = (int)(Math.random()*3);
+        			if (random == LEFT) { //left if available or
+        				if (leftAvailable == true) {
+        					coord.add(currentX, currentY+MOVE); //add left
+        					navi.goTo(new Waypoint(currentX, currentY+MOVE));
+        				} else if (frontAvailable == true) { //check front
+        					coord.add(currentX-MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        				} else { //then it should be right
+        					coord.add(currentX, currentY-MOVE); 
+            				navi.goTo(new Waypoint(currentX, currentY-MOVE));
+        				}
+        			}
+        			if (random == FRONT) { //front if available or
+        				if (frontAvailable == true) {
+        					coord.add(currentX-MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        				} else if (leftAvailable == true) {//check right
+        					coord.add(currentX, currentY+MOVE);
+        					navi.goTo(new Waypoint(currentX, currentY+MOVE));
+        				} else { //then should be right
+        					coord.add(currentX, currentY-MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY-MOVE));
+        				}
+        			} 
+        			if (random == RIGHT) { //right
+        				if (rightAvailable == true) {
+        					coord.add(currentX, currentY-MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY-MOVE));
+        				} else if (leftAvailable) { //check left
+            				coord.add(currentX, currentY+MOVE);
+            				navi.goTo(new Waypoint(currentX, currentY+MOVE));
+        				} else { //then should be front';
+        					coord.add(currentX-MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        				}
+        			}
+        			coord.markoff(currentX+MOVE, currentY); //mark previous off
+        		} else if (available == 1) {  //go back
+        			coord.add(currentX+MOVE, currentY); //add previous
+        			coord.markoff(currentX+MOVE, currentY); //mark previous off
+        			navi.goTo(new Waypoint(currentX+MOVE, currentY)); //go previous/back
+        		} else { //if none available go back
+        			coord.add(currentX+MOVE, currentY); //add previous
+        			coord.markoff(currentX+MOVE, currentY); //mark previous off
+        			navi.goTo(new Waypoint(currentX+MOVE, currentY));
         		}
         		break;
         	case 2:
         		if (available == 2) {
-        			
+        			//check where are the paths first
+        			if (haveLeft && haveFront) { //if there is left
+        				random = (int)(Math.random()*2);
+    					if (random == LEFT) { //either choose left
+        					coord.add(currentX, currentY+MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY+MOVE));
+    					} else { //or else choose front
+        					coord.add(currentX-MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX-MOVE, currentY));
+    					}
+        			} else if (haveLeft && haveRight) { //or else right as the second path
+    					random = (int)(Math.random()*2);
+    					if (random == LEFT) { //either choose left
+        					coord.add(currentX, currentY+MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY+MOVE));
+    					} else { //or else choose right
+        					coord.add(currentX, currentY-MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY-MOVE));
+    					}     
+   					
+        			} else { //or else it's only just front and right as paths
+        				random = 1 + (int)(Math.random()*2);
+        				if (random == FRONT) {
+        					coord.add(currentX-MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        				} else { //then right
+        					coord.add(currentX, currentY-MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY-MOVE));
+        				}
+        			}
+        			coord.add(currentX+MOVE, currentY);		
         		} else if (available == 1) {
-        			
+        			if (haveLeft && leftAvailable) { //left is valid path and available
+        				coord.add(currentX, currentY+MOVE);
+        				navi.goTo(new Waypoint(currentX, currentY+MOVE));
+        			} else if (haveFront && frontAvailable) { //front is valid path and available
+        				coord.add(currentX-MOVE, currentY);
+        				navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        			} else { // else just right valid and available
+        				coord.add(currentX, currentY-MOVE);
+        				navi.goTo(new Waypoint(currentX, currentY-MOVE));
+        			}
+        			coord.markoff(currentX+MOVE, currentY);
+        		} else { //no availability
+        			//check for markedoff path first - left, front, then right
+        			if (coord.checkvisited(currentX, currentY+MOVE)==MARKEDOFF || coord.checkvisited(currentX-MOVE, currentY)==MARKEDOFF || coord.checkvisited(currentX, currentY-MOVE)==MARKEDOFF) {
+            			if (haveLeft && haveFront) {
+            				if (coord.checkvisited(currentX, currentY+MOVE)==MARKEDOFF) { //if left markedoff
+            					coord.markoff(currentX-MOVE, currentY); //mark front
+            					navi.goTo(new Waypoint(currentX-MOVE, currentY)); //go front
+            						
+            				} else {
+            					coord.markoff(currentX, currentY+MOVE); //if not, mark left
+            					navi.goTo(new Waypoint(currentX, currentY+MOVE)); //go left
+            				}
+            			} 
+            			else if (haveLeft && haveRight) {
+            				if (coord.checkvisited(currentX, currentY+MOVE)==MARKEDOFF) { //if left markedoff
+        						coord.markoff(currentX, currentY-MOVE); //mark right
+        						navi.goTo(new Waypoint(currentX, currentY-MOVE)); //go right
+        					} else {
+            					coord.markoff(currentX, currentY+MOVE); //if not, mark left
+            					navi.goTo(new Waypoint(currentX, currentY+MOVE)); //go left
+        					}
+            				
+            			} 
+            			else { //only front and right have path
+            				if (coord.checkvisited(currentX-MOVE, currentY)==MARKEDOFF) { //if front markedoff
+        						coord.markoff(currentX, currentY-MOVE); //mark right
+        						navi.goTo(new Waypoint(currentX, currentY-MOVE)); //go right
+            				} else {
+            					coord.markoff(currentX-MOVE, currentY); //mark front
+            					navi.goTo(new Waypoint(currentX-MOVE, currentY)); //go front
+            				}
+            			}
+            			coord.markoff(currentX+MOVE, currentY);
+        			} else {
+        				coord.add(currentX+MOVE, currentY); //add previous
+        				coord.markoff(currentX+MOVE, currentY); //markoff previous
+        				navi.goTo(new Waypoint(currentX+MOVE,currentY)); //go back/previous
+        			}
+        			break;
         		}
         	case 1:
         		if (available == 1) {
-        			
+        			if (haveFront) {
+        				navi.goTo(new Waypoint(currentX-MOVE, currentY)); //just go front
+        			} else if (haveLeft) {
+        				coord.add(currentX, currentY+MOVE); //add left
+        				navi.goTo(new Waypoint(currentX, currentY+MOVE));
+        				coord.add(currentX+MOVE, currentY); //add previous 
+        			} else { //else have Right as path
+        				coord.add(currentX, currentY-MOVE); //add right
+        				navi.goTo(new Waypoint(currentX, currentY-MOVE)); //go to right
+        				coord.add(currentX+MOVE, currentY); //add previous
+        			}
         		} else {
-        			
+        			if (haveFront) { //if front is the path
+        				navi.goTo(new Waypoint(currentX-MOVE, currentY)); //just go front
+        			} else if (haveLeft) { //either left is the path
+        				coord.markoff(currentX, currentY+MOVE);
+        				navi.goTo(new Waypoint(currentX, currentY+MOVE));
+        				coord.markoff(currentX+MOVE, currentY);
+        			} else { //else it's right as path!
+        				coord.markoff(currentX, currentY-MOVE); //markoff right
+        				navi.goTo(new Waypoint(currentX-MOVE, currentY-MOVE));
+        				coord.markoff(currentX+MOVE, currentY); //markoff previous
+        			}
         		}
+        		break;
+        	default:
+        		navi.goTo(new Waypoint(currentX+MOVE, currentY)); //just go back if dead end
+        		break;	
         		
-        	}
+        	}  
     	}
     	
     	if (currentHeading == -90) {
         	switch (paths) {
         	case 3:
-        		if (available == 3) {
-        			
-        			
-        		} else if (available == 2) {
-        			
-        		} else if (available == 1) {
-        			
-        		} else {
-        			
+        		if (available == 3) { //choose one from the 3 paths
+        			random = (int)(Math.random()*3);
+        			if (random == LEFT) { //left or
+        				coord.add(currentX-MOVE, currentY); //add left
+        				navi.goTo(new Waypoint(currentX-MOVE, currentY)); //check if adjustment is needed before that
+        			} else if (random == FRONT) { //front or
+        				coord.add(currentX, currentY-MOVE);
+        				navi.goTo(new Waypoint(currentX, currentY-MOVE)); //for now just put it in like that
+        			} else { //right
+        				coord.add(currentX+MOVE, currentY);
+        				navi.goTo(new Waypoint(currentX+MOVE, currentY));
+        			}
+        			coord.add(currentX, currentY+MOVE); //add previous
+        		} else if (available == 2) { //choose one not visited
+        			random = (int)(Math.random()*3);
+        			if (random == LEFT) { //left if available or
+        				if (leftAvailable == true) {
+        					coord.add(currentX-MOVE, currentY); //add left
+        					navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        				} else if (frontAvailable == true) { //check front
+        					coord.add(currentX, currentY-MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY-MOVE));
+        				} else { //then it should be right
+        					coord.add(currentX+MOVE, currentY); 
+            				navi.goTo(new Waypoint(currentX+MOVE, currentY));
+        				}
+        			}
+        			if (random == FRONT) { //front if available or
+        				if (frontAvailable == true) {
+        					coord.add(currentX, currentY-MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY-MOVE));
+        				} else if (leftAvailable == true) {//check right
+        					coord.add(currentX-MOVE, currentY);
+        					navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        				} else { //then should be right
+        					coord.add(currentX+MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX+MOVE, currentY));
+        				}
+        			} 
+        			if (random == RIGHT) { //right
+        				if (rightAvailable == true) {
+        					coord.add(currentX+MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX+MOVE, currentY));
+        				} else if (leftAvailable) { //check left
+            				coord.add(currentX-MOVE, currentY);
+            				navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        				} else { //then should be front';
+        					coord.add(currentX, currentY-MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY-MOVE));
+        				}
+        			}
+        			coord.markoff(currentX, currentY+MOVE); //mark previous off
+        		} else if (available == 1) {  //go back
+        			coord.add(currentX, currentY+MOVE); //add previous
+        			coord.markoff(currentX, currentY+MOVE); //mark previous off
+        			navi.goTo(new Waypoint(currentX, currentY+MOVE)); //go previous/back
+        		} else { //if none available go back
+        			coord.add(currentX, currentY+MOVE); //add previous
+        			coord.markoff(currentX, currentY+MOVE); //mark previous off
+        			navi.goTo(new Waypoint(currentX, currentY+MOVE));
         		}
         		break;
         	case 2:
         		if (available == 2) {
-        			
+        			//check where are the paths first
+        			if (haveLeft && haveFront) { //if there is left
+        				random = (int)(Math.random()*2);
+    					if (random == LEFT) { //either choose left
+        					coord.add(currentX-MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX-MOVE, currentY));
+    					} else { //or else choose front
+        					coord.add(currentX, currentY-MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY-MOVE));
+    					}
+        			} else if (haveLeft && haveRight) { //or else right as the second path
+    					random = (int)(Math.random()*2);
+    					if (random == LEFT) { //either choose left
+        					coord.add(currentX-MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX-MOVE, currentY));
+    					} else { //or else choose right
+        					coord.add(currentX+MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX+MOVE, currentY));
+    					}     
+   					
+        			} else { //or else it's only just front and right as paths
+        				random = 1 + (int)(Math.random()*2);
+        				if (random == FRONT) {
+        					coord.add(currentX, currentY-MOVE);
+        				    navi.goTo(new Waypoint(currentX, currentY-MOVE));
+        				} else { //then right
+        					coord.add(currentX+MOVE, currentY);
+        				    navi.goTo(new Waypoint(currentX+MOVE, currentY));
+        				}
+        			}
+        			coord.add(currentX, currentY+MOVE);		
         		} else if (available == 1) {
-        			
+        			if (haveLeft && leftAvailable) { //left is valid path and available
+        				coord.add(currentX-MOVE, currentY);
+        				navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        			} else if (haveFront && frontAvailable) { //front is valid path and available
+        				coord.add(currentX, currentY-MOVE);
+        				navi.goTo(new Waypoint(currentX, currentY-MOVE));
+        			} else { // else just right valid and available
+        				coord.add(currentX+MOVE, currentY);
+        				navi.goTo(new Waypoint(currentX+MOVE, currentY));
+        			}
+        			coord.markoff(currentX, currentY+MOVE);
+        		} else { //no availability
+        			//check for markedoff path first
+        			if (coord.checkvisited(currentX-MOVE, currentY)==MARKEDOFF || coord.checkvisited(currentX, currentY-MOVE)==MARKEDOFF || coord.checkvisited(currentX+MOVE, currentY)==MARKEDOFF) {
+            			if (haveLeft && haveFront) {
+            				if (coord.checkvisited(currentX-MOVE, currentY)==MARKEDOFF) { //if left markedoff
+            					coord.markoff(currentX, currentY-MOVE); //mark front
+            					navi.goTo(new Waypoint(currentX, currentY-MOVE)); //go front
+            						
+            				} else {
+            					coord.markoff(currentX-MOVE, currentY); //if not, mark left
+            					navi.goTo(new Waypoint(currentX-MOVE, currentY)); //go left
+            				}
+            			} 
+            			else if (haveLeft && haveRight) {
+            				if (coord.checkvisited(currentX-MOVE, currentY)==MARKEDOFF) { //if left markedoff
+        						coord.markoff(currentX+MOVE, currentY); //mark right
+        						navi.goTo(new Waypoint(currentX+MOVE, currentY)); //go right
+        					} else {
+            					coord.markoff(currentX-MOVE, currentY); //if not, mark left
+            					navi.goTo(new Waypoint(currentX-MOVE, currentY)); //go left
+        					}
+            				
+            			} 
+            			else { //only front and right have path
+            				if (coord.checkvisited(currentX, currentY-MOVE)==MARKEDOFF) { //if front markedoff
+        						coord.markoff(currentX+MOVE, currentY); //mark right
+        						navi.goTo(new Waypoint(currentX+MOVE, currentY)); //go right
+            				} else {
+            					coord.markoff(currentX, currentY-MOVE); //mark front
+            					navi.goTo(new Waypoint(currentX, currentY-MOVE)); //go front
+            				}
+            			}
+            			coord.markoff(currentX, currentY+MOVE);
+        			} else {
+        				coord.add(currentX, currentY+MOVE); //add previous
+        				coord.markoff(currentX, currentY+MOVE); //markoff previous
+        				navi.goTo(new Waypoint(currentX,currentY+MOVE)); //go back/previous
+        			}
+        			break;
         		}
         	case 1:
         		if (available == 1) {
-        			
+        			if (haveFront) {
+        				navi.goTo(new Waypoint(currentX, currentY-MOVE)); //just go front
+        			} else if (haveLeft) {
+        				coord.add(currentX-MOVE, currentY); //add left
+        				navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        				coord.add(currentX, currentY+MOVE); //add previous 
+        			} else { //else have Right as path
+        				coord.add(currentX+MOVE, currentY);
+        				navi.goTo(new Waypoint(currentX+MOVE, currentY));
+        				coord.add(currentX, currentY+MOVE); //add previous
+        			}
         		} else {
-        			
+        			if (haveFront) { //if front is the path
+        				navi.goTo(new Waypoint(currentX, currentY-MOVE)); //just go front
+        			} else if (haveLeft) { //either left is the path
+        				coord.markoff(currentX-MOVE, currentY);
+        				navi.goTo(new Waypoint(currentX-MOVE, currentY));
+        				coord.markoff(currentX, currentY+MOVE);
+        			} else { //else it's right as path!
+        				coord.markoff(currentX+MOVE, currentY);
+        				navi.goTo(new Waypoint(currentX+MOVE, currentY));
+        				coord.markoff(currentX, currentY+MOVE);
+        			}
         		}
+        		break;
+        	default:
+        		navi.goTo(new Waypoint(currentX, currentY+MOVE)); //just go back if dead end
+        		break;	
         		
-        	}
+        	}  
     	}
     }
 }

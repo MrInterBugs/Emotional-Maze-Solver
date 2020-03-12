@@ -62,21 +62,18 @@ public class TremauxAlgorithm implements Behavior {
     }
     
     private void scanForCoord() {
-	    while(true) {
-	    	color.fetchSample(samples, LEFT);
-		    Delay.msDelay(100);
-	    	
-		    sensorMotor.rotateTo(-90, false);
-		    color.fetchSample(samples, FRONT);
-		    Delay.msDelay(100);
-		    
-		    sensorMotor.rotateTo(-180, false);
-		    color.fetchSample(samples, RIGHT);
-		    Delay.msDelay(100);
-		    
-		    sensorMotor.rotateTo(0, false);
-		    break;
-	    }
+    	color.fetchSample(samples, LEFT);
+	    Delay.msDelay(100);
+    	
+	    sensorMotor.rotateTo(-90, false);
+	    color.fetchSample(samples, FRONT);
+	    Delay.msDelay(100);
+	    
+	    sensorMotor.rotateTo(-180, false);
+	    color.fetchSample(samples, RIGHT);
+	    Delay.msDelay(100);
+	    
+	    sensorMotor.rotateTo(0, false);
     }
     
 //    private void checkForEnd() {

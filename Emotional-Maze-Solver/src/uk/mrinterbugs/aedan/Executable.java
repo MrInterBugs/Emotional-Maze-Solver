@@ -68,11 +68,10 @@ public class Executable {
        
         firstDisplay();
 
-        Behavior MoveForward = new MoveForward(navi, sensorMotor);
         Behavior EscapeExit = new EscapeExit(navi);
         Behavior LowBattery = new LowBattery(navi);
 
-        Behavior[] behaviorArray = {MoveForward, EscapeExit, LowBattery};
+        Behavior[] behaviorArray = {EscapeExit, LowBattery};
 
         Arbitrator arbitrator = new Arbitrator(behaviorArray);
         arbitrator.go();
@@ -82,6 +81,5 @@ public class Executable {
         cs.close();
         ts.close();
         sensorMotor.close();
-        System.exit(0);
     }
 }

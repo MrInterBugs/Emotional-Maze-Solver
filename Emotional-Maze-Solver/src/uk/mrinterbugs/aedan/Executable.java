@@ -59,6 +59,7 @@ public class Executable {
         Button.ENTER.waitForPressAndRelease();
         LCD.clear();
     }
+    
 
     /**
      * This is the main body of the code.
@@ -69,6 +70,9 @@ public class Executable {
         NXTSoundSensor ss = new NXTSoundSensor(SensorPort.S1);
         SampleProvider sound = ss.getDBAMode();
         EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S2);
+        SampleProvider color = cs.getRedMode();
+        float lightLevels[] = SensorCalibration.calibrateColorSensor(color);
+        EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S2);
         SampleProvider colour = cs.getRedMode();
 
         BaseRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
@@ -78,6 +82,8 @@ public class Executable {
 
         Chassis chassis = new WheeledChassis(new Wheel[]{rightWheel,leftWheel},WheeledChassis.TYPE_DIFFERENTIAL);
         MovePilot pilot = new MovePilot(chassis);
+        pilot.setAngularAcceleration(100);
+        pilot.setAngularSpeed(20);
         Navigator navi = new Navigator(pilot);
         
         BaseRegulatedMotor sensorMotor = new EV3MediumRegulatedMotor(MotorPort.C);
@@ -86,9 +92,11 @@ public class Executable {
 
         Behavior EscapeExit = new EscapeExit(navi);
         Behavior LowBattery = new LowBattery(navi);
+        Behavior LineFollower = new LineFollower(navi, color, lightLevels);
+        System.out.println(navi.getPoseProvider().getPose().getHeading());
 
+        Behavior[] behaviorArray = {LineFollower, EscapeExit, LowBattery};
         (new PlaySound(START_UP)).start();
-        Behavior[] behaviorArray = {EscapeExit, LowBattery};
 
         Arbitrator arbitrator = new Arbitrator(behaviorArray);
         arbitrator.go();

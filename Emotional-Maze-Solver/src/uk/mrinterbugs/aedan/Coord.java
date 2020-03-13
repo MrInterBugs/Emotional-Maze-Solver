@@ -1,6 +1,17 @@
 package uk.mrinterbugs.aedan;
-import java.util.ArrayList;
 
+import java.util.ArrayList;
+/**
+ * 
+ *
+ * @author Aedan Lawrence
+ * @author Bruce Lay
+ * @author Edmund Chee
+ * @author Joules James
+ * 
+ * @version 0.5
+ * @since 2020-03-04
+ */
 public class Coord {
 	private ArrayList<ArrayList<Integer>> list;
 	

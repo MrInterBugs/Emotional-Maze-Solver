@@ -6,6 +6,17 @@ import lejos.robotics.navigation.MoveController;
 import lejos.robotics.navigation.Navigator;
 import lejos.robotics.subsumption.Behavior;
 
+/**
+ * 
+ *
+ * @author Aedan Lawrence
+ * @author Bruce Lay
+ * @author Edmund Chee
+ * @author Joules James
+ * 
+ * @version 0.5
+ * @since 2020-03-01
+ */
 public class LineFollower implements Behavior {
 	private Navigator navi;
 	private SampleProvider colorSampler;

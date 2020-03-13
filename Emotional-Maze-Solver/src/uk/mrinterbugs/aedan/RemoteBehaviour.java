@@ -2,8 +2,18 @@ package uk.mrinterbugs.aedan;
 
 import lejos.robotics.navigation.MovePilot;
 import lejos.robotics.subsumption.Behavior;
-import lejos.utility.Delay;
 
+/**
+ * 
+ *
+ * @author Aedan Lawrence
+ * @author Bruce Lay
+ * @author Edmund Chee
+ * @author Joules James
+ * 
+ * @version 0.5
+ * @since 2020-02-27
+ */
 public class RemoteBehaviour implements Behavior{
 	private static String input;
 	private static String current;

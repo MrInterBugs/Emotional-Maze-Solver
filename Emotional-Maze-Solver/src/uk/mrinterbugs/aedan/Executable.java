@@ -48,7 +48,7 @@ public class Executable {
      */
     public static void firstDisplay() {
         LCD.drawString("Emotional Maze Solver",2,2);
-        LCD.drawString("Version 0.1",2,3);
+        LCD.drawString("Version 0.5",2,3);
         LCD.drawString("Press Enter",2,5);
         Button.ENTER.waitForPressAndRelease();
         LCD.clear();
@@ -95,8 +95,9 @@ public class Executable {
         Behavior LowBattery = new LowBattery(navi);
         Behavior Remote = new RemoteBehaviour(pilot);
         Behavior LeftWall = new LineFollower(navi, color, lightLevels);
+        Behavior QRHandler = new QRHandler();
         
-        Behavior[] behaviorArray = {LeftWall, Remote, EscapeExit, LowBattery};
+        Behavior[] behaviorArray = {LeftWall, QRHandler, Remote, EscapeExit, LowBattery};
         
         (new PlaySound(START_UP)).start();
 

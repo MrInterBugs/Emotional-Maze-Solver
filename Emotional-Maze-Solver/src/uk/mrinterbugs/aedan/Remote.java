@@ -11,6 +11,17 @@ import java.net.SocketAddress;
 
 import lejos.hardware.lcd.LCD;
 
+/**
+ * 
+ *
+ * @author Aedan Lawrence
+ * @author Bruce Lay
+ * @author Edmund Chee
+ * @author Joules James
+ * 
+ * @version 0.5
+ * @since 2020-02-27
+ */
 public class Remote extends Thread {
 	private static String IPaddress = "192.168.0.7";
 	private static int port = 1234;

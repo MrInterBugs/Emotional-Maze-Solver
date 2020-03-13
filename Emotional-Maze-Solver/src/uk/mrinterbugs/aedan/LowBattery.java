@@ -6,6 +6,17 @@ import lejos.robotics.navigation.Navigator;
 import lejos.robotics.subsumption.Behavior;
 import lejos.utility.Delay;
 
+/**
+ * 
+ *
+ * @author Aedan Lawrence
+ * @author Bruce Lay
+ * @author Edmund Chee
+ * @author Joules James
+ * 
+ * @version 0.5
+ * @since 2020-02-14
+ */
 public class LowBattery implements Behavior {
     private static final float LOW_LEVEL = 6.0f;
     private Navigator navi;

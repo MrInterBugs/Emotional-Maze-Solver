@@ -48,7 +48,7 @@ public class Executable {
      */
     public static void firstDisplay() {
         LCD.drawString("Emotional Maze Solver",2,2);
-        LCD.drawString("Version 0.1",2,3);
+        LCD.drawString("Version 0.5",2,3);
         LCD.drawString("Press Enter",2,5);
         Button.ENTER.waitForPressAndRelease();
         LCD.clear();
@@ -71,8 +71,6 @@ public class Executable {
         SampleProvider sound = ss.getDBAMode();
         EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S2);
         SampleProvider color = cs.getRedMode();
-        
-        float lightLevels[] = SensorCalibration.calibrateColorSensor(color);
 
         BaseRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
         Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, WHEEL_DIAMETER).offset(AXLE_LENGTH/2);
@@ -83,9 +81,6 @@ public class Executable {
         MovePilot pilot = new MovePilot(chassis);
         Navigator navi = new Navigator(pilot);
         
-        pilot.setAngularAcceleration(100);
-        pilot.setAngularSpeed(20);
-        
         Sound.setVolume(100);      
 
         BaseRegulatedMotor sensorMotor = new EV3MediumRegulatedMotor(MotorPort.C);
@@ -94,12 +89,15 @@ public class Executable {
   
         (new Remote()).start();
 
+        float lightLevels[] = SensorCalibration.calibrateColorSensor(color);
+        
         Behavior EscapeExit = new EscapeExit(navi);
         Behavior LowBattery = new LowBattery(navi);
         Behavior Remote = new RemoteBehaviour(pilot);
-        Behavior FollowLeftWall = new LineFollower(navi, color, lightLevels);
-
-        Behavior[] behaviorArray = {FollowLeftWall, Remote, EscapeExit, LowBattery};
+        Behavior LeftWall = new LineFollower(navi, color, lightLevels);
+        Behavior QRHandler = new QRHandler();
+        
+        Behavior[] behaviorArray = {LeftWall, QRHandler, Remote, EscapeExit, LowBattery};
         
         (new PlaySound(START_UP)).start();
 

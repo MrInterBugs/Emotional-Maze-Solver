@@ -4,6 +4,17 @@ import java.io.File;
 
 import lejos.hardware.Sound;
 
+/**
+ * 
+ *
+ * @author Aedan Lawrence
+ * @author Bruce Lay
+ * @author Edmund Chee
+ * @author Joules James
+ * 
+ * @version 0.5
+ * @since 2020-02-17
+ */
 public class PlaySound extends Thread {
 	private String filename;
 	
@@ -12,6 +23,15 @@ public class PlaySound extends Thread {
 	}
 		
     public void run() {
-    	Sound.playSample(new File(this.filename));
+    	playTune(); 
     }
+
+	private void playTune() {
+		int time = Sound.playSample(new File(this.filename));
+		try {
+			Thread.sleep(time);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 }

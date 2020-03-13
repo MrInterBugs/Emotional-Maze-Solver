@@ -6,10 +6,20 @@ import lejos.robotics.navigation.MoveController;
 import lejos.robotics.navigation.Navigator;
 import lejos.robotics.subsumption.Behavior;
 
+/**
+ * 
+ *
+ * @author Aedan Lawrence
+ * @author Bruce Lay
+ * @author Edmund Chee
+ * @author Joules James
+ * 
+ * @version 0.5
+ * @since 2020-03-01
+ */
 public class LineFollower implements Behavior {
 	private Navigator navi;
 	private SampleProvider colorSampler;
-	private final float[] lightLevels;
 	private final int whiteIndex = 0;
 	private final int blackIndex = 1;
 	private final float averageLight;
@@ -22,14 +32,13 @@ public class LineFollower implements Behavior {
 	public LineFollower(Navigator navi, SampleProvider colorSampler, float[] lightLevels) {
 		this.navi = navi;
 		this.colorSampler = colorSampler;
-		this.lightLevels = lightLevels;
 		this.averageLight = (lightLevels[whiteIndex] + lightLevels[blackIndex]) / 2;
 		this.getNavigatorMoveController().setLinearSpeed(mediumSpeed);
 	}
 
 	@Override
 	public boolean takeControl() {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -69,7 +78,7 @@ public class LineFollower implements Behavior {
 		if(!this.onDarkSurface()) {
 			rotateClockwiseDegrees(180);
 			if(!this.onDarkSurface()) {
-				rotateLeft();
+				rotateRight();
 			}
 		}
 	}
@@ -124,30 +133,10 @@ public class LineFollower implements Behavior {
 		return navi;
 	}
 
-	private void setNavi(Navigator navi) {
-		this.navi = navi;
-	}
-
 	private SampleProvider getColorSampler() {
 		return colorSampler;
 	}
 
-	private void setColorSampler(SampleProvider colorSampler) {
-		this.colorSampler = colorSampler;
-	}
-
-	private float[] getLightLevels() {
-		return lightLevels;
-	}
-
-	private int getWhiteIndex() {
-		return whiteIndex;
-	}
-
-	private int getBlackIndex() {
-		return blackIndex;
-	}
-	
 	private void incrementAdjustmentsLeft() {
 		this.setAdjustmentsLeft(getAdjustmentsLeft() + 1);
 	}

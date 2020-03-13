@@ -80,6 +80,15 @@ public class TremauxAlgorithm implements Behavior {
 //    	
 //    }
     
+    public int makeLastDigitFive(int number) {
+	  	number = ((number / 10) * 10) + 5;
+    	if(number > 0) {
+    		return number;
+    	} else {
+    		return -number;
+    	}
+    }
+    
     private int[] checkForJunction() {
     	int paths = 0;
     	int available = 0;
@@ -100,42 +109,11 @@ public class TremauxAlgorithm implements Behavior {
     	int tempX = (int) this.navi.getPoseProvider().getPose().getX();
     	int tempY = (int) this.navi.getPoseProvider().getPose().getY();
     	
-    	while (true) {
-        	int lastDigitX = Math.abs(tempX%10);
-        	int lastDigitY = Math.abs(tempY%10);
-        	
-        	//make x coord ends with value 5
-            if ((int)(lastDigitX/5) == 0) {
-                if (tempX < 0) {
-                    tempX -= (5 - lastDigitX);
-                } else {
-                    tempX += (5 - lastDigitX);
-                }
-            } else {
-                if (tempX < 0) {
-                    tempX += ((lastDigitX + 5) % 5); 
+    	//make x coord ends with value 5
+    	tempX = makeLastDigitFive(tempX);
 
-                } else {
-                    tempX -= ((lastDigitX + 5) % 5);
-                }
-            }
-
-            //make y coord ends with value 5
-            if ((int)(lastDigitY/5) == 0) {
-                if (tempY < 0) {
-                    tempY -= (5 - lastDigitY); 
-                } else {
-                    tempY += (5 - lastDigitY);
-                }
-            } else {
-                if (tempY < 0) {
-                    tempY += ((lastDigitY + 5) % 5);
-                } else {
-                    tempY -= ((lastDigitY + 5) % 5);
-                }
-            }
-        	break;
-    	}
+        //make y coord ends with value 5
+    	tempY = makeLastDigitFive(tempY);
     	
     	currentX = tempX;
     	currentY = tempY;

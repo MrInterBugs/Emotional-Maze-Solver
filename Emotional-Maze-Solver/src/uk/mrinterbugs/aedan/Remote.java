@@ -23,17 +23,15 @@ public class Remote extends Thread {
 	private static String input = "";
 	
 	public static String getInput() {
-		return input;
-	}
-	
-	public static void setInput(String blank) {
-		input = blank;
+		String current = input;
+		input = "";
+		return current;
+		
 	}
 	
     public void run() {
     	byte[] buffer = new byte[MAX_READ];
 		
-		LCD.drawString("Waiting  ", 0, 0);
 		SocketAddress sa = new InetSocketAddress(IPaddress, port);
 		try {
 			connection.connect(sa, 1500);
@@ -50,27 +48,22 @@ public class Remote extends Thread {
 				out = connection.getOutputStream();
 			} catch (IOException ignored) {
 			}
-			LCD.drawString("Connected", 0, 0);
 		}
 
-		LCD.drawString("Waiting  ", 0, 1);
 		while (connection != null) {
 			try {
 				if (in.available() > 0) {
+					input = "";
 					LCD.drawString("Chars read: ", 0, 2);
 					LCD.drawInt(in.available(), 12, 2);
 					int read = in.read(buffer, 0, MAX_READ);
 					for (int index= 0 ; index < read ; index++) {						
 						input = input + (char)buffer[index];
 					}
-					LCD.drawString(input, 3, 3);
 					out.write("Reply:".getBytes(), 0, 6);
 					out.write(buffer, 0, read);
 				}
-				sleep(5);
-				input = "";
 			} catch (IOException ignored) {
-		} catch (InterruptedException ignored) {
 			}
 		}
     }

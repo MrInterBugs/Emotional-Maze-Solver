@@ -5,6 +5,7 @@ import lejos.robotics.subsumption.Behavior;
 
 public class RemoteBehaviour implements Behavior{
 	private static String input;
+	private static String current = "";
 	private MovePilot pilot;
 
 	public RemoteBehaviour(MovePilot pilot) {
@@ -14,24 +15,16 @@ public class RemoteBehaviour implements Behavior{
 	@Override
 	public boolean takeControl() {
 		input = Remote.getInput();
-		switch (input) {
-        case "up":
-            return true;
-        case "stop":
-        	return true;
-        case "right":
-        	return true;
-        case "left":
-        	return true;
-        case "down":
-        	return true;                 
+		if(input != null) {
+			current = input;
+			return true;
 		}
 		return false;
 	}
 
 	@Override
 	public void action() {
-		switch (input) {
+		switch (current) {
         case "up":
             if (!pilot.isMoving()) {
                 pilot.forward();

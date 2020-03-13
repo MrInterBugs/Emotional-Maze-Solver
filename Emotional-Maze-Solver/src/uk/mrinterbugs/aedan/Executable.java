@@ -50,12 +50,8 @@ public class Executable {
 
         NXTSoundSensor ss = new NXTSoundSensor(SensorPort.S1);
         SampleProvider sound = ss.getDBAMode();
-        EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S2);
-        SampleProvider distance = us.getDistanceMode();
-        EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S3);
-        SampleProvider colour = cs.getRedMode();
-        EV3TouchSensor ts = new EV3TouchSensor(SensorPort.S4);
-        SampleProvider touch = ts.getTouchMode();
+        EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S2);
+        SampleProvider color = cs.getRedMode();
 
         BaseRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
         Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, WHEEL_DIAMETER).offset(-AXLE_LENGTH/2);
@@ -71,19 +67,17 @@ public class Executable {
        
         firstDisplay();
 
-        Behavior MoveForward = new MoveForward(navi, sensorMotor);
+        Behavior TremauxMazeSolve = new TremauxAlgorithm(navi, sensorMotor, color);
         Behavior EscapeExit = new EscapeExit(navi);
         Behavior LowBattery = new LowBattery(navi);
 
-        Behavior[] behaviorArray = {MoveForward, EscapeExit, LowBattery};
+        Behavior[] behaviorArray = {TremauxMazeSolve, EscapeExit, LowBattery};
 
         Arbitrator arbitrator = new Arbitrator(behaviorArray);
         arbitrator.go();
 
         ss.close();
-        us.close();
         cs.close();
-        ts.close();
         sensorMotor.close();
         System.exit(0);
     }

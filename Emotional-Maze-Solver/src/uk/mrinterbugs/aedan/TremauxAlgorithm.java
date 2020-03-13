@@ -81,12 +81,15 @@ public class TremauxAlgorithm implements Behavior {
 //    }
     
     public int makeLastDigitFive(int number) {
-	  	number = ((number / 10) * 10) + 5;
     	if(number > 0) {
-    		return number;
+    		return ((number / 10) * 10) + 5;
     	} else {
-    		return -number;
+    		return ((number / 10) * 10) - 5;
     	}
+    }
+    
+    public int roundNearestTen(int number) {
+    	return Math.round((float) number / 10) * 10;
     }
     
     public Pose getPoseProviderPose() {
@@ -117,17 +120,12 @@ public class TremauxAlgorithm implements Behavior {
     	int frontAvailable = 0;
     	int rightAvailable = 0;
     	
-    	int currentHeading = 0;
-    	int currentX = 0;
-    	int currentY = 0;
+    	int currentHeading = roundNearestTen((int) getCurrentHeading());
     	
-    	float tempHeading = getCurrentHeading();
+    	int currentX = makeLastDigitFive((int) getCurrentXCoordinate());
+    	int currentY = makeLastDigitFive((int) getCurrentYCoordinate());
     	
-    	currentX = makeLastDigitFive((int) getCurrentXCoordinate());
-    	currentY = makeLastDigitFive((int) getCurrentYCoordinate());
-    	
-    	if (tempHeading < 5 && tempHeading > -5) {
-    		currentHeading = 0;
+    	if (currentHeading < 5 && currentHeading > -5) {
         	if (samples[this.LEFT] <= DARK) {
         		haveLeft = 1;
         		if (coord.checkvisited(currentX, currentY-MOVE)==NOTVISITED) {
@@ -154,8 +152,7 @@ public class TremauxAlgorithm implements Behavior {
         	}
     	}
     	
-    	if (tempHeading < 95 && tempHeading > 85) {
-    		currentHeading = 90;
+    	if (currentHeading < 95 && currentHeading > 85) {
         	if (samples[this.LEFT] <= DARK) {
         		haveLeft = 1;
         		if (coord.checkvisited(currentX+MOVE, currentY)==NOTVISITED) {
@@ -182,8 +179,7 @@ public class TremauxAlgorithm implements Behavior {
         	}
     	}
     	
-    	if (tempHeading < -85 && tempHeading > -95) {
-    		currentHeading = -90;
+    	if (currentHeading < -85 && currentHeading > -95) {
         	if (samples[this.LEFT] <= DARK) {
         		haveLeft = 1;
         		if (coord.checkvisited(currentX-MOVE, currentY)==NOTVISITED) {
@@ -210,8 +206,7 @@ public class TremauxAlgorithm implements Behavior {
         	}
     	}
     	
-    	if (tempHeading > 175 || tempHeading < -175) {
-    		currentHeading = 180;
+    	if (currentHeading > 175 || currentHeading < -175) {
         	if (samples[this.LEFT] <= DARK) {
         		haveLeft = 1;
         		if (coord.checkvisited(currentX, currentY+MOVE)==NOTVISITED) {

@@ -7,7 +7,8 @@ import lejos.robotics.subsumption.Behavior;
 import lejos.utility.Delay;
 
 /**
- * 
+ * Allows the user to press and hold the top left button on the EV3 to stop the program.
+ * Plays a threaded shutdown sound. Then calls System.exit(0).
  *
  * @author Aedan Lawrence
  * @author Bruce Lay

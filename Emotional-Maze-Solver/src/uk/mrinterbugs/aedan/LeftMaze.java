@@ -7,7 +7,8 @@ import lejos.robotics.navigation.Navigator;
 import lejos.robotics.subsumption.Behavior;
 
 /**
- * 
+ * This is our initial attempt at solving a physical maze. 
+ * Using a light sensor the robot will follow a black line on a white background.
  *
  * @author Aedan Lawrence
  * @author Bruce Lay
@@ -17,7 +18,7 @@ import lejos.robotics.subsumption.Behavior;
  * @version 0.5
  * @since 2020-03-01
  */
-public class LineFollower implements Behavior {
+public class LeftMaze implements Behavior {
 	private Navigator navi;
 	private SampleProvider colorSampler;
 	private final int whiteIndex = 0;
@@ -29,25 +30,42 @@ public class LineFollower implements Behavior {
 	private int adjustmentsRight = 0;
 	private final int rotationCorrectionDegree = 2;
 
-	public LineFollower(Navigator navi, SampleProvider colorSampler, float[] lightLevels) {
+	/**
+	 * Constructor which sets average light level from given light and dark levels.
+	 * Also sets the speed of the robot.
+	 * 
+	 * @param navi Allows control of the robots speed and travel.
+	 * @param colorSampler Check reflected light levels to see if the line is present or not.
+	 * @param lightLevels An array of average values so the colour sampler can be calibrated.
+	 */
+	public LeftMaze(Navigator navi, SampleProvider colorSampler, float[] lightLevels) {
 		this.navi = navi;
 		this.colorSampler = colorSampler;
-		this.averageLight = (lightLevels[whiteIndex] + lightLevels[blackIndex]) / 2;
-		this.getNavigatorMoveController().setLinearSpeed(mediumSpeed);
+		averageLight = (lightLevels[whiteIndex] + lightLevels[blackIndex]) / 2;
+		navi.getMoveController().setLinearSpeed(mediumSpeed);
 	}
 
+	/**
+	 * This is our main behaviour that should 
+	 */
 	@Override
 	public boolean takeControl() {
 		return false;
 	}
 
+	/**
+	 * 
+	 */
 	@Override
 	public void action() {
 		followLeftWall();
 	}
 	
+	/**
+	 * 
+	 */
 	private void followLeftWall() {
-		getNavigatorMoveController().travel(10, false);
+		navi.getMoveController().travel(10, false);
 		if(getConsecutiveAdjustments() < 4) {
 			if(this.onDarkSurface()) {
 				System.out.println("dark");
@@ -71,8 +89,11 @@ public class LineFollower implements Behavior {
 
 	}
 	
+	/**
+	 * 
+	 */
 	private void findTurn() {
-		getNavigatorMoveController().travel(37, false);
+		navi.getMoveController().travel(37, false);
 		correctRotation();
 		rotateLeft();
 		if(!this.onDarkSurface()) {
@@ -83,6 +104,9 @@ public class LineFollower implements Behavior {
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	private void correctRotation() {
 		if(this.getAdjustmentsLeft() > 0) {
 			rotateClockwiseDegrees(rotationCorrectionDegree * getAdjustmentsLeft());
@@ -92,15 +116,24 @@ public class LineFollower implements Behavior {
 		this.setAdjustmentsLeft(0);
 		this.setAdjustmentsRight(0);
 	}
-	
+	/**
+	 * 
+	 */
 	private void rotateLeft() {
 		rotateClockwiseDegrees(-90);
 	}
 	
+	/**
+	 * 
+	 */
 	private void rotateRight() {
 		rotateClockwiseDegrees(90);
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	private boolean onDarkSurface() {
 		System.out.println(getLightSample());
 		System.out.println(getAverageLight());
@@ -113,9 +146,6 @@ public class LineFollower implements Behavior {
 		return lightSample[0];
 	}
 	
-	private MoveController getNavigatorMoveController() {
-		return this.navi.getMoveController();
-	}
 	
 	private float getCurrentHeading() {
 		return getNavi().getPoseProvider().getPose().getHeading();

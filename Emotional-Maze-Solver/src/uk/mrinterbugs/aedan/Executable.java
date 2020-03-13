@@ -94,10 +94,10 @@ public class Executable {
         Behavior EscapeExit = new EscapeExit(navi);
         Behavior LowBattery = new LowBattery(navi);
         Behavior Remote = new RemoteBehaviour(pilot);
-        Behavior LeftWall = new LineFollower(navi, color, lightLevels);
+        Behavior LeftMaze = new LeftMaze(navi, color, lightLevels);
         Behavior QRHandler = new QRHandler();
         
-        Behavior[] behaviorArray = {LeftWall, QRHandler, Remote, EscapeExit, LowBattery};
+        Behavior[] behaviorArray = {LeftMaze, QRHandler, Remote, EscapeExit, LowBattery};
         
         (new PlaySound(START_UP)).start();
 

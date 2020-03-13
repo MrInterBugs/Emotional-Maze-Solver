@@ -89,6 +89,22 @@ public class TremauxAlgorithm implements Behavior {
     	}
     }
     
+    public Pose getPoseProviderPose() {
+    	return this.navi.getPoseProvider().getPose();
+    }
+    
+    public float getCurrentXCoordinate() {
+    	return this.getPoseProviderPose().getX();
+    }
+    
+    public float getCurrentYCoordinate() {
+    	return this.getPoseProviderPose().getY();
+    }
+    
+    public float getCurrentHeading() {
+    	return this.getPoseProviderPose().getHeading();
+    }
+    
     private int[] checkForJunction() {
     	int paths = 0;
     	int available = 0;
@@ -105,18 +121,10 @@ public class TremauxAlgorithm implements Behavior {
     	int currentX = 0;
     	int currentY = 0;
     	
-    	float tempHeading = this.navi.getPoseProvider().getPose().getHeading();
-    	int tempX = (int) this.navi.getPoseProvider().getPose().getX();
-    	int tempY = (int) this.navi.getPoseProvider().getPose().getY();
+    	float tempHeading = getCurrentHeading();
     	
-    	//make x coord ends with value 5
-    	tempX = makeLastDigitFive(tempX);
-
-        //make y coord ends with value 5
-    	tempY = makeLastDigitFive(tempY);
-    	
-    	currentX = tempX;
-    	currentY = tempY;
+    	currentX = makeLastDigitFive((int) getCurrentXCoordinate());
+    	currentY = makeLastDigitFive((int) getCurrentYCoordinate());
     	
     	if (tempHeading < 5 && tempHeading > -5) {
     		currentHeading = 0;

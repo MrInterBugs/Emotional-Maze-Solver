@@ -1,5 +1,10 @@
 package uk.mrinterbugs.aedan;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import lejos.hardware.Button;
 import lejos.hardware.motor.BaseRegulatedMotor;
 import lejos.robotics.SampleProvider;
@@ -108,133 +113,71 @@ public class TremauxAlgorithm implements Behavior {
     	return this.getPoseProviderPose().getHeading();
     }
     
+    public int[] getPathCoordinates(int xCoordinate, int yCoordinate, Direction currentDirection, int rotation) {
+    	int frontDegree = Direction.FRONT.getDegree();
+    	int leftDegree = Direction.LEFT.getDegree();
+    	int rightDegree = Direction.RIGHT.getDegree();
+    	int backDegree = Direction.BACK.getDegree();
+    	
+    	Map<Integer, Integer> addToOrSubtractFromXCoord = new HashMap<Integer, Integer>();
+    	addToOrSubtractFromXCoord.put(frontDegree, 1);
+    	addToOrSubtractFromXCoord.put(leftDegree, 0);
+    	addToOrSubtractFromXCoord.put(rightDegree, 0);
+    	addToOrSubtractFromXCoord.put(backDegree, -1);
+    	
+    	Map<Integer, Integer> addToOrSubtractFromYCoord = new HashMap<Integer, Integer>();
+    	addToOrSubtractFromYCoord.put(frontDegree, 0);
+    	addToOrSubtractFromYCoord.put(leftDegree, 1);
+    	addToOrSubtractFromYCoord.put(rightDegree, -1);
+    	addToOrSubtractFromYCoord.put(backDegree, 0);
+    	
+    	int pathHeading = (currentDirection.getDegree() + rotation) % 360;
+    	xCoordinate = xCoordinate + (MOVE * addToOrSubtractFromXCoord.get(pathHeading));
+    	yCoordinate = yCoordinate + (MOVE * addToOrSubtractFromYCoord.get(pathHeading));
+    	
+    	int[] coordinates = {xCoordinate, yCoordinate};
+    	return coordinates;
+    }
+    
     private int[] checkForJunction() {
     	int paths = 0;
     	int available = 0;
-    	    	
-    	int haveLeft = 0;
-    	int haveFront = 0;
-    	int haveRight = 0;
     	
-    	int leftAvailable = 0;
-    	int frontAvailable = 0;
-    	int rightAvailable = 0;
+    	Map<Direction, Boolean> havePath= new HashMap<Direction, Boolean>();
+    	Map<Direction, Integer> haveAvailable = new HashMap<Direction, Integer>();
+    	
+    	List<Direction> directions = Arrays.asList(Direction.values());
+    	
+    	Direction[] frontAndSides = {Direction.LEFT, Direction.FRONT, Direction.RIGHT};
+    	for(Direction direction: frontAndSides) {
+    		havePath.put(direction, false);
+    		haveAvailable.put(direction, 0);
+    	}
     	
     	int currentHeading = roundNearestTen((int) getCurrentHeading());
     	
     	int currentX = makeLastDigitFive((int) getCurrentXCoordinate());
     	int currentY = makeLastDigitFive((int) getCurrentYCoordinate());
     	
-    	if (currentHeading < 5 && currentHeading > -5) {
-        	if (samples[this.LEFT] <= DARK) {
-        		haveLeft = 1;
-        		if (coord.checkvisited(currentX, currentY-MOVE)==NOTVISITED) {
-        			available++;
-        			leftAvailable++;
-        		}
-        		paths++;
-        	}
-        	if (samples[this.FRONT] <= DARK) {
-        		haveFront = 1;
-        		if (coord.checkvisited(currentX+MOVE, currentY)==NOTVISITED) {
-        			available++;
-        			frontAvailable++;
-        		}
-        		paths++;
-        	}
-        	if (samples[this.RIGHT] <= DARK) {
-        		haveRight = 1;
-        		if (coord.checkvisited(currentX, currentY+MOVE)==NOTVISITED) {
-        			available++;
-        			rightAvailable++;
-        		}
-        		paths++;
-        	}
-    	}
-    	
-    	if (currentHeading < 95 && currentHeading > 85) {
-        	if (samples[this.LEFT] <= DARK) {
-        		haveLeft = 1;
-        		if (coord.checkvisited(currentX+MOVE, currentY)==NOTVISITED) {
-        			available++;
-        			leftAvailable++;
-        		}
-        		paths++;
-        	}
-        	if (samples[this.FRONT] <= DARK) {
-        		haveFront = 1;
-        		if (coord.checkvisited(currentX, currentY+MOVE)==NOTVISITED) {
-        			available++;
-        			frontAvailable++;
-        		}
-        		paths++;
-        	}
-        	if (samples[this.RIGHT] <= DARK) {
-        		haveRight = 1;
-        		if (coord.checkvisited(currentX-MOVE, currentY)==NOTVISITED) {
-        			available++;
-        			rightAvailable++;
-        		}
-        		paths++;
-        	}
-    	}
-    	
-    	if (currentHeading < -85 && currentHeading > -95) {
-        	if (samples[this.LEFT] <= DARK) {
-        		haveLeft = 1;
-        		if (coord.checkvisited(currentX-MOVE, currentY)==NOTVISITED) {
-        			available++;
-        			leftAvailable++;
-        		}
-        		paths++;
-        	}
-        	if (samples[this.FRONT] <= DARK) {
-        		haveFront = 1;
-        		if (coord.checkvisited(currentX, currentY-MOVE)==NOTVISITED) {
-        			available++;
-        			frontAvailable++;
-        		}
-        		paths++;
-        	}
-        	if (samples[this.RIGHT] <= DARK) {
-        		haveRight = 1;
-        		if (coord.checkvisited(currentX+MOVE, currentY)==NOTVISITED) {
-        			available++;
-        			rightAvailable++;
-        		}
-        		paths++;
-        	}
-    	}
-    	
-    	if (currentHeading > 175 || currentHeading < -175) {
-        	if (samples[this.LEFT] <= DARK) {
-        		haveLeft = 1;
-        		if (coord.checkvisited(currentX, currentY+MOVE)==NOTVISITED) {
-        			available++;
-        			leftAvailable++;
-        		}
-        		paths++;
-        	}
-        	if (samples[this.FRONT] <= DARK) {
-        		haveFront = 1;
-        		if (coord.checkvisited(currentX-MOVE, currentY)==NOTVISITED) {
-        			available++;
-        			frontAvailable++;
-        		}
-        		paths++;
-        	}
-        	if (samples[this.RIGHT] <= DARK) {
-        		haveRight = 1;
-        		if (coord.checkvisited(currentX, currentY-MOVE)==NOTVISITED) {
-        			available++;
-        			rightAvailable++;
-        		}
-        		paths++;
-        	}
+    	int rotations[] = {90, 0, 270}; // Left, Front, Right
+    	int rotationsIndex = 0; // Iterator for rotations[]
+    	for(Direction direction: frontAndSides) {
+    		if(samples[direction.ordinal()] <= DARK) {
+    			havePath.put(direction, true);
+    			
+    			int[] updatedCoordinates = getPathCoordinates(currentX, currentY, Direction.valueOfDegree(currentHeading), rotations[rotationsIndex]);
+    			int xIndex = 0;
+    			int yIndex = 1;
+    			if(coord.checkvisited(updatedCoordinates[xIndex], updatedCoordinates[yIndex]) == NOTVISITED) {
+    				available++;
+    				haveAvailable.put(direction, haveAvailable.get(direction) + 1);
+    			}
+    			paths++;
+    		}
+    		rotationsIndex++;
     	}
     	
     	return new int[] {currentX, currentY, currentHeading, paths, available, haveLeft, haveFront, haveRight, leftAvailable, frontAvailable, rightAvailable};
-    	
     }
     
     private void goToJunction(int[] variables) {

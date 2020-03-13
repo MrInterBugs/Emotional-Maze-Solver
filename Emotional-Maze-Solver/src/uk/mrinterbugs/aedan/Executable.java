@@ -71,8 +71,6 @@ public class Executable {
         SampleProvider sound = ss.getDBAMode();
         EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S2);
         SampleProvider color = cs.getRedMode();
-        
-//        float lightLevels[] = SensorCalibration.calibrateColorSensor(color);
 
         BaseRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
         Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, WHEEL_DIAMETER).offset(AXLE_LENGTH/2);
@@ -91,13 +89,16 @@ public class Executable {
   
         (new Remote()).start();
 
+        float lightLevels[] = SensorCalibration.calibrateColorSensor(color);
+        
         Behavior EscapeExit = new EscapeExit(navi);
         Behavior LowBattery = new LowBattery(navi);
         Behavior Remote = new RemoteBehaviour(pilot);
-
-        Behavior[] behaviorArray = {Remote, EscapeExit, LowBattery};
+        Behavior LeftWall = new LineFollower(navi, color, lightLevels);
         
-//        (new PlaySound(START_UP)).start();
+        Behavior[] behaviorArray = {LeftWall, Remote, EscapeExit, LowBattery};
+        
+        (new PlaySound(START_UP)).start();
 
         Arbitrator arbitrator = new Arbitrator(behaviorArray);
         arbitrator.go();

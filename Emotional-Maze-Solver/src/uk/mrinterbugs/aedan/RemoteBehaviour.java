@@ -2,10 +2,11 @@ package uk.mrinterbugs.aedan;
 
 import lejos.robotics.navigation.MovePilot;
 import lejos.robotics.subsumption.Behavior;
+import lejos.utility.Delay;
 
 public class RemoteBehaviour implements Behavior{
 	private static String input;
-	private static String current = "";
+	private static String current;
 	private MovePilot pilot;
 
 	public RemoteBehaviour(MovePilot pilot) {
@@ -15,7 +16,7 @@ public class RemoteBehaviour implements Behavior{
 	@Override
 	public boolean takeControl() {
 		input = Remote.getInput();
-		if(input != null) {
+		if(input != "") {
 			current = input;
 			return true;
 		}
@@ -29,27 +30,24 @@ public class RemoteBehaviour implements Behavior{
             if (!pilot.isMoving()) {
                 pilot.forward();
             }
-            input = "";
             break;
         case "stop":
             pilot.stop();
-            input = "";
             break;
         case "right":
             pilot.rotate(-90);
-            input = "";
             break;
         case "left":
             pilot.rotate(90);
-            input = "";
             break;
         case "down":
             if (!pilot.isMoving()) {
                 pilot.backward();
             }
-            input = "";
             break;                   
-		}	
+		}
+		current = "";
+		Remote.setInput();
 	}
 
 	@Override

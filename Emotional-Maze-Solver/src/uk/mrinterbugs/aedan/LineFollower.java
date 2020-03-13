@@ -67,7 +67,7 @@ public class LineFollower implements Behavior {
 		if(!this.onDarkSurface()) {
 			rotateClockwiseDegrees(180);
 			if(!this.onDarkSurface()) {
-				rotateLeft();
+				rotateRight();
 			}
 		}
 	}
@@ -84,6 +84,10 @@ public class LineFollower implements Behavior {
 	
 	private void rotateLeft() {
 		rotateClockwiseDegrees(-90);
+	}
+	
+	private void rotateRight() {
+		rotateClockwiseDegrees(90);
 	}
 
 	private boolean onDarkSurface() {

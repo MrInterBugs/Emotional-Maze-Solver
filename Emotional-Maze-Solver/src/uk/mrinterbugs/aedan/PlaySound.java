@@ -12,6 +12,15 @@ public class PlaySound extends Thread {
 	}
 		
     public void run() {
-    	Sound.playSample(new File(this.filename));
+    	playTune(); 
     }
+
+	private void playTune() {
+		int time = Sound.playSample(new File(this.filename));
+		try {
+			Thread.sleep(time);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 }

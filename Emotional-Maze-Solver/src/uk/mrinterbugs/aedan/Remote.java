@@ -22,10 +22,12 @@ public class Remote extends Thread {
 	private static OutputStream out = null;
 	private static String input = "";
 	
-	public static String getInput() {
-		String current = input;
+	public static void setInput() {
 		input = "";
-		return current;
+	}
+	
+	public static String getInput() {
+		return input;
 		
 	}
 	

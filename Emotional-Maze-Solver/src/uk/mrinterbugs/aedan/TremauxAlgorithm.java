@@ -180,21 +180,8 @@ public class TremauxAlgorithm implements Behavior {
     	return new int[] {currentX, currentY, currentHeading, paths, available, haveLeft, haveFront, haveRight, leftAvailable, frontAvailable, rightAvailable};
     }
     
-    private void goToJunction(int[] variables) {
-    	int currentX = variables[0];
-    	int currentY = variables[1];
-    	int currentHeading = variables[2];
-    	int paths = variables[3];
-    	int available = variables[4];
-    	boolean haveLeft = (variables[5] == 1) ? true:false;
-    	boolean haveFront = (variables[6] == 1) ? true:false;
-    	boolean haveRight = (variables[7] == 1) ? true:false;
-    	boolean leftAvailable = (variables[8] == 1) ? true:false;
-    	boolean frontAvailable = (variables[9] == 1) ? true:false;
-    	boolean rightAvailable = (variables[MOVE] == 1) ? true:false;
-    	
-    	
-    	int random = 0;
+    private void goToJunction(int currentX, int currentY, int currentHeading, int paths, int available, Map<Direction, Boolean> havePath, Map<Direction, Integer> haveAvailable) {
+ 	   	int random = 0;
     	
     	if (currentHeading == 0) {
         	switch (paths) {

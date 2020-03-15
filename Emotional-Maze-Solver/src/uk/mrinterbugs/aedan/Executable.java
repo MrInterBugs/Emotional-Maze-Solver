@@ -110,6 +110,7 @@ public class Executable {
 
         ss.close();
         cs.close();
+        ts.close();
         sensorMotor.close();
         System.exit(0);
     }

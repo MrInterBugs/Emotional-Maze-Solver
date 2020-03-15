@@ -4,7 +4,7 @@ import lejos.robotics.navigation.MovePilot;
 import lejos.robotics.subsumption.Behavior;
 
 /**
- * 
+ * This class allows for the robot to be controlled from the android app remotely it gets the string from the Remote class.
  *
  * @author Aedan Lawrence
  * @author Bruce Lay
@@ -19,10 +19,18 @@ public class RemoteBehaviour implements Behavior{
 	private static String current;
 	private MovePilot pilot;
 
+	/**
+     * Constructor to allow the passing of MovePilot.
+     * 
+     * @param pilot the main MovePilot.
+     */
 	public RemoteBehaviour(MovePilot pilot) {
         this.pilot = pilot;
     }
 
+	/**
+	 * Take control will return true if the input equals up, down, left, right, stop. Else it will return false.
+	 */
 	@Override
 	public boolean takeControl() {
 		input = Remote.getInput();
@@ -33,6 +41,9 @@ public class RemoteBehaviour implements Behavior{
 		return false;
 	}
 
+	/**
+	 * The action will change based on the input, once the action is run it will clear the input from the Remote class so the action can only be run once.
+	 */
 	@Override
 	public void action() {
 		switch (current) {
@@ -63,5 +74,4 @@ public class RemoteBehaviour implements Behavior{
 	@Override
 	public void suppress() {
 	}
-
 }

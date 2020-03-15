@@ -1,6 +1,7 @@
 package uk.mrinterbugs.aedan;
 
 import java.util.ArrayList;
+
 /**
  * Used to create a list of coordinates and keep track of how much they have been visited for the pose provider.
  *

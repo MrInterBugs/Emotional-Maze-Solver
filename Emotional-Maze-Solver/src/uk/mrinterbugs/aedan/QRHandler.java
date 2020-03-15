@@ -1,11 +1,11 @@
 package uk.mrinterbugs.aedan;
 
-import lejos.hardware.Sound;
 import lejos.hardware.lcd.LCD;
 import lejos.robotics.subsumption.Behavior;
 
 /**
- * 
+ * This class works very similarly to RemoteBehaviour however it uses QR codes instead of user supplied inputs.
+ * @see RemoteBehaviour
  *
  * @author Aedan Lawrence
  * @author Bruce Lay
@@ -19,6 +19,9 @@ public class QRHandler implements Behavior{
 	private static String input;
 	private static String current;
 
+	/**
+	 * This behaviour will only take control if the string starts with "QR: ". Else it will return false.
+	 */
 	@Override
 	public boolean takeControl() {
 		input = Remote.getInput();
@@ -32,12 +35,13 @@ public class QRHandler implements Behavior{
 		return false;
 	}
 
+	/**
+	 * Based on which QR is scanned different methods will me called from the Emotions class.
+	 */
 	@Override
 	public void action() {
 		switch (current) {
         case "END":
-        	System.out.println("Fuck Yeah");
-        	Sound.beep();
             break;
         case "HAPPY":
             break;
@@ -54,8 +58,6 @@ public class QRHandler implements Behavior{
 
 	@Override
 	public void suppress() {
-		// TODO Auto-generated method stub
 		
 	}
-
 }

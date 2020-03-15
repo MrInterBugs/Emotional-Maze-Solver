@@ -9,6 +9,7 @@ import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
+import lejos.hardware.sensor.EV3TouchSensor;
 import lejos.hardware.sensor.NXTSoundSensor;
 import lejos.robotics.SampleProvider;
 import lejos.robotics.chassis.Chassis;
@@ -71,6 +72,8 @@ public class Executable {
         SampleProvider sound = ss.getDBAMode();
         EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S2);
         SampleProvider color = cs.getRedMode();
+        EV3TouchSensor ts = new EV3TouchSensor(SensorPort.S3);
+        SampleProvider touch = ts.getTouchMode();
 
         BaseRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
         Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, WHEEL_DIAMETER).offset(AXLE_LENGTH/2);
@@ -96,8 +99,9 @@ public class Executable {
         Behavior Remote = new RemoteBehaviour(pilot);
         Behavior LeftMaze = new LeftMaze(navi, color, lightLevels);
         Behavior QRHandler = new QRHandler();
+        Behavior DontTouch = new DontTouch(touch);
         
-        Behavior[] behaviorArray = {LeftMaze, QRHandler, Remote, EscapeExit, LowBattery};
+        Behavior[] behaviorArray = {LeftMaze, DontTouch, QRHandler, Remote, EscapeExit, LowBattery};
         
         (new PlaySound(START_UP)).start();
 

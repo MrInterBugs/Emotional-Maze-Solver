@@ -1,6 +1,7 @@
 package uk.mrinterbugs.aedan;
 
 import lejos.hardware.Sound;
+import lejos.hardware.lcd.LCD;
 import lejos.robotics.subsumption.Behavior;
 
 /**
@@ -20,9 +21,9 @@ public class QRHandler implements Behavior{
 
 	@Override
 	public boolean takeControl() {
-		input = Remote.getInput();
+		input = Remote.getInputs();
 		String[] inputArray = input.split("\\s+");
-		System.out.println(inputArray[0]);
+		LCD.drawString(inputArray[0], 0, 4);
 		if(inputArray[0].equals("QR:")) {
 			System.out.println(inputArray[1]);
 			current = inputArray[1];
@@ -39,16 +40,12 @@ public class QRHandler implements Behavior{
         	Sound.beep();
             break;
         case "HAPPY":
-            
             break;
-        case "SAD":
-            
+        case "SAD":    
             break;
-        case "SNORLAX":
-            
+        case "SNORLAX": 
             break;
         case "CLAP":
-
             break;                   
 		}
 		current = "";

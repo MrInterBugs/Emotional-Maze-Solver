@@ -46,7 +46,7 @@ public class LeftMaze implements Behavior {
 	}
 
 	/**
-	 * This is our main behaviour that should 
+	 * This is our main behaviour that should be always active unless suppressed or the maze has been completed.
 	 */
 	@Override
 	public boolean takeControl() {
@@ -54,7 +54,9 @@ public class LeftMaze implements Behavior {
 	}
 
 	/**
+	 * When takeControl() is true action will call the followLeftWall method.
 	 * 
+	 * @see followLeftWall
 	 */
 	@Override
 	public void action() {
@@ -62,7 +64,11 @@ public class LeftMaze implements Behavior {
 	}
 	
 	/**
+	 * Moves forward a small amount and takes a reading from the colour sensor.
+	 * If this reading is not the same surface as the last 3 readings then it will correct to be as close the edge of the line as possible.
+	 * However if it is the forth reading it will assume it has come to a corner and call the findTurn method.
 	 * 
+	 * @see findTurn
 	 */
 	private void followLeftWall() {
 		navi.getMoveController().travel(10, false);
@@ -90,7 +96,7 @@ public class LeftMaze implements Behavior {
 	}
 	
 	/**
-	 * 
+	 * This method allows the robot to find the line at a corner.
 	 */
 	private void findTurn() {
 		navi.getMoveController().travel(37, false);

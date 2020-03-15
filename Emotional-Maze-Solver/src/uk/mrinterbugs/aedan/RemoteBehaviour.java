@@ -26,7 +26,7 @@ public class RemoteBehaviour implements Behavior{
 	@Override
 	public boolean takeControl() {
 		input = Remote.getInput();
-		if(input != "") {
+		if(input.equals("up") || input.equals("stop") || input.equals("right") || input.equals("left") || input.equals("down")) {
 			current = input;
 			return true;
 		}

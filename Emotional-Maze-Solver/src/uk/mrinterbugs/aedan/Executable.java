@@ -97,7 +97,7 @@ public class Executable {
         Behavior LeftMaze = new LeftMaze(navi, color, lightLevels);
         Behavior QRHandler = new QRHandler();
         
-        Behavior[] behaviorArray = {LeftMaze, QRHandler, Remote, EscapeExit, LowBattery};
+        Behavior[] behaviorArray = {QRHandler, Remote, EscapeExit, LowBattery};
         
         (new PlaySound(START_UP)).start();
 

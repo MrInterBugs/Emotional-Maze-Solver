@@ -73,6 +73,7 @@ public class Remote extends Thread {
 					for (int index= 0 ; index < read ; index++) {						
 						input = input + (char)buffer[index];
 					}
+					LCD.drawString(input, 0, 3);
 					out.write("Reply:".getBytes(), 0, 6);
 					out.write(buffer, 0, read);
 				}

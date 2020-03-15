@@ -21,7 +21,7 @@ public class QRHandler implements Behavior{
 
 	@Override
 	public boolean takeControl() {
-		input = Remote.getInputs();
+		input = Remote.getInput();
 		String[] inputArray = input.split("\\s+");
 		LCD.drawString(inputArray[0], 0, 4);
 		if(inputArray[0].equals("QR:")) {

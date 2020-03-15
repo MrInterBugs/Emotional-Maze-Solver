@@ -2,7 +2,6 @@ package uk.mrinterbugs.aedan;
 
 import lejos.hardware.lcd.LCD;
 import lejos.robotics.SampleProvider;
-import lejos.robotics.navigation.MoveController;
 import lejos.robotics.navigation.Navigator;
 import lejos.robotics.subsumption.Behavior;
 
@@ -111,7 +110,7 @@ public class LeftMaze implements Behavior {
 	}
 	
 	/**
-	 * 
+	 * Due to small rotations to stay on the line this makes sure the 90 degree turns are done from 0, 90, 180 or 270.
 	 */
 	private void correctRotation() {
 		if(this.getAdjustmentsLeft() > 0) {
@@ -123,22 +122,23 @@ public class LeftMaze implements Behavior {
 		this.setAdjustmentsRight(0);
 	}
 	/**
-	 * 
+	 * Makes the robot turn left 90 degrees.
 	 */
 	private void rotateLeft() {
 		rotateClockwiseDegrees(-90);
 	}
 	
 	/**
-	 * 
+	 * Makes the robot turn right 90 degrees.
 	 */
 	private void rotateRight() {
 		rotateClockwiseDegrees(90);
 	}
 
 	/**
+	 * Checks the stored samples and compares the current one to see if it is on a dark surface.
 	 * 
-	 * @return
+	 * @return true if on dark, false otherwise.
 	 */
 	private boolean onDarkSurface() {
 		System.out.println(getLightSample());
@@ -146,6 +146,11 @@ public class LeftMaze implements Behavior {
 		return getLightSample() <= getAverageLight();
 	}
 
+	/**
+	 * Gets the current reading from the colour sensor.
+	 * 
+	 * @return a float of the current light value from the colour sensor.
+	 */
 	private float getLightSample() {
 		float lightSample[] = new float[1];
 		this.getColorSampler().fetchSample(lightSample, 0);

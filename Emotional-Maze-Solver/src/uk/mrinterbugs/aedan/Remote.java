@@ -12,7 +12,9 @@ import java.net.SocketAddress;
 import lejos.hardware.lcd.LCD;
 
 /**
- * 
+ * This class is the ground work for connecting to the android app.
+ * Provided by @author cyclingProfessor
+ * We have threaded this so that we can run other behaviours at the same time.
  *
  * @author Aedan Lawrence
  * @author Bruce Lay
@@ -33,15 +35,24 @@ public class Remote extends Thread {
 	private static OutputStream out = null;
 	private static String input = "";
 	
+	/**
+	 * Setter used to clear the value of input once it has been handled by a behaviour.
+	 */
 	public static void setInput() {
 		input = "";
 	}
 	
+	/**
+	 * Allows behaviours to get the input from the android app.
+	 */
 	public static String getInput() {
 		return input;
 		
 	}
 	
+	/**
+	 * This is the thread that allows the connection to the app and generates the string from an input.
+	 */
     public void run() {
     	byte[] buffer = new byte[MAX_READ];
 		
@@ -67,13 +78,10 @@ public class Remote extends Thread {
 			try {
 				if (in.available() > 0) {
 					input = "";
-					LCD.drawString("Chars read: ", 0, 2);
-					LCD.drawInt(in.available(), 12, 2);
 					int read = in.read(buffer, 0, MAX_READ);
 					for (int index= 0 ; index < read ; index++) {						
 						input = input + (char)buffer[index];
 					}
-					LCD.drawString(input, 0, 3);
 					out.write("Reply:".getBytes(), 0, 6);
 					out.write(buffer, 0, read);
 				}

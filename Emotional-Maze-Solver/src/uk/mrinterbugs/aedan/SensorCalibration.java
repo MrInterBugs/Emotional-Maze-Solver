@@ -23,7 +23,6 @@ public class SensorCalibration {
     		index++;
     		LCD.clear();
     	}
-    	
     	return lightLevels;
     }
     

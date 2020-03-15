@@ -7,7 +7,8 @@ import lejos.robotics.subsumption.Behavior;
 import lejos.utility.Delay;
 
 /**
- * 
+ * A behaviour to stop the program if the battery voltage is bellow a low threshold.
+ * Plays a threaded low battery sound. Then calls System.exit(0).
  *
  * @author Aedan Lawrence
  * @author Bruce Lay
@@ -22,15 +23,26 @@ public class LowBattery implements Behavior {
     private Navigator navi;
     private String lowSound =  "LowBatterySound.wav";
 
+    /**
+     * Constructor to allow the passing of Navigator.
+     * 
+     * @param navi the main Navigator.
+     */
     public LowBattery(Navigator navi) {
         this.navi = navi;
     }
 
+    /**
+     * This behaviour will take control only when the battery voltage is bellow 6.0.
+     */
     @Override
     public boolean takeControl() {
         return Battery.getVoltage() < LOW_LEVEL ;
     }
 
+    /**
+     * When the behaviour is triggered the robot will play the low battery sound, count down on screen, then exit.
+     */
     @Override
     public void action() {
         navi.stop();
@@ -45,8 +57,10 @@ public class LowBattery implements Behavior {
         System.exit(0);
     }
 
+    /**
+     * We do not want want this method to suppress if the battery is low it must exit.
+     */
     @Override
     public void suppress() {
-        //We do not want want this method to suppress if the battery is low it must exit.
     }
 }

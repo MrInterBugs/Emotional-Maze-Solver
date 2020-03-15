@@ -7,7 +7,7 @@ import lejos.robotics.subsumption.Behavior;
 import lejos.utility.Delay;
 
 /**
- * Allows the user to press and hold the top left button on the EV3 to stop the program.
+ * Allows the user to press and hold the top left button (Escape) on the EV3 to stop the program.
  * Plays a threaded shutdown sound. Then calls System.exit(0).
  *
  * @author Aedan Lawrence
@@ -22,15 +22,26 @@ public class EscapeExit implements Behavior {
     private Navigator navi;
     private String shutSound = "ShutDownSound.wav";
 
+    /**
+     * Constructor to allow the passing of Navigator.
+     * 
+     * @param navi the main Navigator.
+     */
     public EscapeExit(Navigator navi) {
         this.navi = navi;
     }
 
+    /**
+     * This behaviour will take control only when the escape button is pushed down.
+     */
     @Override
     public boolean takeControl() {
         return Button.ESCAPE.isDown();
     }
 
+    /**
+     * When the escape button is pushed down the robot will play the shutdown sound, count down on screen, then exit.
+     */
     @Override
     public void action() {
         navi.stop();
@@ -45,8 +56,10 @@ public class EscapeExit implements Behavior {
         System.exit(0);
     }
 
+    /**
+     * We do not want want this method to suppress if the escape key is pressed it must exit.
+     */
     @Override
     public void suppress() {
-        //We do not want want this method to suppress if the escape key is pressed it must exit.
     }
 }

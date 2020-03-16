@@ -55,7 +55,7 @@ public class Executable {
         LCD.drawString("Aedan Lawrence",2,2);
         LCD.drawString("Bruce Lay",2,3);
         LCD.drawString("Edmund Chee",2,4);
-        LCD.drawString("Joules James",2,5);
+        LCD.drawString("Jules James",2,5);
         LCD.drawString("Press Enter",2,6);
         Button.ENTER.waitForPressAndRelease();
         LCD.clear();

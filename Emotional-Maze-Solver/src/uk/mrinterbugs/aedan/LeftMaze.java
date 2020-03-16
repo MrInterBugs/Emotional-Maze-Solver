@@ -1,6 +1,7 @@
 package uk.mrinterbugs.aedan;
 
 import lejos.hardware.lcd.LCD;
+import lejos.hardware.motor.BaseRegulatedMotor;
 import lejos.robotics.SampleProvider;
 import lejos.robotics.navigation.Navigator;
 import lejos.robotics.subsumption.Behavior;
@@ -20,14 +21,19 @@ import lejos.robotics.subsumption.Behavior;
 public class LeftMaze implements Behavior {
 	private Navigator navi;
 	private SampleProvider colorSampler;
+	private boolean hasFoundLine = true;
+	private BaseRegulatedMotor sensorMotor;
+	private final int incrementalTravelDistance = 12; // About 1 centimetre on paper
+	private final int alignWheelTravelDistance = 82; // Distance to move forward before making turn
 	private final int whiteIndex = 0;
 	private final int blackIndex = 1;
+	private final int maxConsecutiveAdjustments = 4;
 	private final float averageLight;
-	private final int slowSpeed = 10;
+	private final int slowSpeed = 17;
 	private final int mediumSpeed = slowSpeed * 2;
 	private int adjustmentsLeft = 0;
 	private int adjustmentsRight = 0;
-	private final int rotationCorrectionDegree = 2;
+	private final int rotationCorrectionDegree = 3;
 
 	/**
 	 * Constructor which sets average light level from given light and dark levels.
@@ -37,9 +43,10 @@ public class LeftMaze implements Behavior {
 	 * @param colorSampler Check reflected light levels to see if the line is present or not.
 	 * @param lightLevels An array of average values so the colour sampler can be calibrated.
 	 */
-	public LeftMaze(Navigator navi, SampleProvider colorSampler, float[] lightLevels) {
+	public LeftMaze(Navigator navi, SampleProvider colorSampler, float[] lightLevels, BaseRegulatedMotor sensorMotor) {
 		this.navi = navi;
 		this.colorSampler = colorSampler;
+		this.sensorMotor = sensorMotor;
 		averageLight = (lightLevels[whiteIndex] + lightLevels[blackIndex]) / 2;
 		navi.getMoveController().setLinearSpeed(mediumSpeed);
 	}
@@ -49,7 +56,7 @@ public class LeftMaze implements Behavior {
 	 */
 	@Override
 	public boolean takeControl() {
-		return false;
+		return true;
 	}
 
 	/**
@@ -59,7 +66,73 @@ public class LeftMaze implements Behavior {
 	 */
 	@Override
 	public void action() {
-		followLeftWall();
+		if(this.hasFoundLine()) {
+			followLeftWall();
+		} else {
+			findLine();
+		}
+	}
+	
+	private void findLine() {
+		this.getSensorMotor().rotateTo(0);
+		boolean initiallyDark = this.onDarkSurface();
+		int rotationsToMake = 3;
+		for(int rotations = 0; rotations <= rotationsToMake; rotations++) {
+			if(initiallyDark && this.onDarkSurface()) {
+				this.rotateClockwiseDegrees(rotationCorrectionDegree);
+			} else if(!initiallyDark && !this.onDarkSurface()) {
+				this.rotateClockwiseDegrees(-rotationCorrectionDegree);
+			} else {
+				this.setHasFoundLine(true);
+				break;
+			}
+		}
+	}
+	
+	private boolean hasFoundLine() {
+		return this.hasFoundLine;
+	}
+	
+	private void setHasFoundLine(boolean hasFoundLine) {
+		this.hasFoundLine = hasFoundLine;
+	}
+	
+	/**
+	 * 
+	 * @return -1, 0, 1, or 2 for a left, forward, right, or no path respectively with priority in that order.
+	 */
+	private int detectNextMovePath() {
+		int leftRotationAngle = -45;
+		int rightRotationAngle = -90;
+		boolean forwardPossible = this.getConsecutiveAdjustments() < this.getMaxConsecutiveAdjustments();
+		boolean  rightPossible = false;
+		
+		
+		this.getSensorMotor().rotateTo(-leftRotationAngle);
+		if(this.onDarkSurface()) {
+			return -1;
+		}
+		
+		this.getSensorMotor().rotateTo(rightRotationAngle);
+		if(this.onDarkSurface()) {
+			rightPossible = true;
+		}
+		
+		if(forwardPossible) {
+			return 0;
+		} else if(rightPossible) {
+			return 1;
+		} else {
+			return 2;
+		}
+	}
+	
+	public void travelForwardShortStep() {
+		this.getNavi().getMoveController().travel(this.getIncrementalTravelDistancee());
+	}
+	
+	public void travelForwardAlignWheels() {
+		this.getNavi().getMoveController().travel(this.getAlignWheelTravelDistance());
 	}
 	
 	/**
@@ -70,43 +143,50 @@ public class LeftMaze implements Behavior {
 	 * @see findTurn
 	 */
 	private void followLeftWall() {
-		navi.getMoveController().travel(10, false);
-		if(getConsecutiveAdjustments() < 4) {
+		int nextPath = detectNextMovePath();
+		
+		final int left = -1;
+		final int forward = 0;
+		final int right = 1;
+		
+		if(nextPath == left || nextPath == right) {
+			this.travelForwardAlignWheels();
+			correctRotation();
+		}
+		
+		switch(nextPath) {
+		case left: // Left turn
+			rotateLeft();
+			this.setHasFoundLine(false);
+			break;
+		case forward:
+			this.getSensorMotor().rotateTo(0);
+			this.travelForwardShortStep();
 			if(this.onDarkSurface()) {
-				System.out.println("dark");
 				rotateClockwiseDegrees(rotationCorrectionDegree);
-				incrementAdjustmentsLeft();
 				setAdjustmentsRight(0);
-				LCD.clear();
-			} else {	
-				System.out.println("light");
+				incrementAdjustmentsLeft();
+			} else {
 				rotateClockwiseDegrees(-rotationCorrectionDegree);
-				incrementAdjustmentsRight();
 				setAdjustmentsLeft(0);
-				LCD.clear();
+				incrementAdjustmentsRight();
 			}
-		} else {
-			findTurn();
+			break;
+		case right:
+			rotateRight();
+			this.setHasFoundLine(false);
+			break;
+		default: // Turn around
+			rotateClockwiseDegrees(195);
+			setAdjustmentsLeft(0);
+			setAdjustmentsRight(0);
+			this.setHasFoundLine(false);
+			break;
 		}
 	}
 
 	public void suppress() {
 
-	}
-	
-	/**
-	 * This method allows the robot to find the line at a corner.
-	 */
-	private void findTurn() {
-		navi.getMoveController().travel(37, false);
-		correctRotation();
-		rotateLeft();
-		if(!this.onDarkSurface()) {
-			rotateClockwiseDegrees(180);
-			if(!this.onDarkSurface()) {
-				rotateRight();
-			}
-		}
 	}
 	
 	/**
@@ -125,14 +205,14 @@ public class LeftMaze implements Behavior {
 	 * Makes the robot turn left 90 degrees.
 	 */
 	private void rotateLeft() {
-		rotateClockwiseDegrees(-90);
+		rotateClockwiseDegrees(90);
 	}
 	
 	/**
 	 * Makes the robot turn right 90 degrees.
 	 */
 	private void rotateRight() {
-		rotateClockwiseDegrees(90);
+		rotateClockwiseDegrees(-90);
 	}
 
 	/**
@@ -210,5 +290,21 @@ public class LeftMaze implements Behavior {
 		} else {
 			return leftAdjustments;
 		}
+	}
+
+	private int getMaxConsecutiveAdjustments() {
+		return maxConsecutiveAdjustments;
+	}
+
+	private int getAlignWheelTravelDistance() {
+		return this.alignWheelTravelDistance;
+	}
+	
+	private int getIncrementalTravelDistancee() {
+		return incrementalTravelDistance;
+	}
+
+	private BaseRegulatedMotor getSensorMotor() {
+		return sensorMotor;
 	}
 }

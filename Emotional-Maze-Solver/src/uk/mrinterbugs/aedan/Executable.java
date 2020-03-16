@@ -79,11 +79,13 @@ public class Executable {
 
         Chassis chassis = new WheeledChassis(new Wheel[]{rightWheel,leftWheel},WheeledChassis.TYPE_DIFFERENTIAL);
         MovePilot pilot = new MovePilot(chassis);
+        pilot.setAngularAcceleration(100);
+        pilot.setAngularSpeed(50);
         Navigator navi = new Navigator(pilot);
         
         Sound.setVolume(100);      
 
-        BaseRegulatedMotor sensorMotor = new EV3MediumRegulatedMotor(MotorPort.C);
+        BaseRegulatedMotor sensorMotor = new EV3MediumRegulatedMotor(MotorPort.D);
        
         firstDisplay();
   
@@ -94,7 +96,7 @@ public class Executable {
         Behavior EscapeExit = new EscapeExit(navi);
         Behavior LowBattery = new LowBattery(navi);
         Behavior Remote = new RemoteBehaviour(pilot);
-        Behavior LeftMaze = new LeftMaze(navi, color, lightLevels);
+        Behavior LeftMaze = new LeftMaze(navi, color, lightLevels, sensorMotor);
         Behavior QRHandler = new QRHandler();
         
         Behavior[] behaviorArray = {LeftMaze, QRHandler, Remote, EscapeExit, LowBattery};

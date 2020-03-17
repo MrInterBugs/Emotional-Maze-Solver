@@ -44,7 +44,7 @@ public class EscapeExit implements Behavior {
      */
     @Override
     public void action() {
-        navi.stop();
+    	Executable.close();
         LCD.clear();
         (new PlaySound(shutSound)).start();
         LCD.drawString("Escape key: 3",2,2);

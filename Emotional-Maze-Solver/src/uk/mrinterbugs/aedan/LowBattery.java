@@ -45,7 +45,7 @@ public class LowBattery implements Behavior {
      */
     @Override
     public void action() {
-        navi.stop();
+        Executable.close();
         LCD.drawString("Low Battery!", 2, 2);
         (new PlaySound(lowSound)).start();
         LCD.drawString("Shutdown: 3",2,3);

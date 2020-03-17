@@ -9,6 +9,7 @@ import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
+import lejos.hardware.sensor.EV3TouchSensor;
 import lejos.hardware.sensor.NXTSoundSensor;
 import lejos.robotics.SampleProvider;
 import lejos.robotics.chassis.Chassis;
@@ -41,12 +42,18 @@ public class Executable {
     private static final double WHEEL_DIAMETER = 56;
     private static final double AXLE_LENGTH = 120;
     private static final String START_UP = "StartUpSound.wav";
+    private static NXTSoundSensor ss;
+    private static EV3ColorSensor cs;
+    private static EV3TouchSensor ts;
+    private static BaseRegulatedMotor sensorMotor;
+    private static BaseRegulatedMotor leftMotor;
+    private static BaseRegulatedMotor rightMotor;
 
     /**
      * Displays the program and version information until a button is pressed.
      * Also shows group members names.
      */
-    public static void firstDisplay() {
+    private static void firstDisplay() {
         LCD.drawString("Emotional Maze Solver",2,2);
         LCD.drawString("Version 0.5",2,3);
         LCD.drawString("Press Enter",2,5);
@@ -67,14 +74,16 @@ public class Executable {
      */
     public static void main(String[] args) {
 
-        NXTSoundSensor ss = new NXTSoundSensor(SensorPort.S1);
+        ss = new NXTSoundSensor(SensorPort.S1);
         SampleProvider sound = ss.getDBAMode();
-        EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S2);
+        cs = new EV3ColorSensor(SensorPort.S2);
         SampleProvider color = cs.getRedMode();
+        ts = new EV3TouchSensor(SensorPort.S3);
+        SampleProvider touch = ts.getTouchMode();
 
-        BaseRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
+        leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
         Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, WHEEL_DIAMETER).offset(AXLE_LENGTH/2);
-        BaseRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(MotorPort.B);
+        rightMotor = new EV3LargeRegulatedMotor(MotorPort.B);
         Wheel rightWheel = WheeledChassis.modelWheel(rightMotor, WHEEL_DIAMETER).offset(-AXLE_LENGTH/2);
 
         Chassis chassis = new WheeledChassis(new Wheel[]{rightWheel,leftWheel},WheeledChassis.TYPE_DIFFERENTIAL);
@@ -85,7 +94,7 @@ public class Executable {
         
         Sound.setVolume(100);      
 
-        BaseRegulatedMotor sensorMotor = new EV3MediumRegulatedMotor(MotorPort.D);
+        sensorMotor = new EV3MediumRegulatedMotor(MotorPort.D);
        
         firstDisplay();
   
@@ -106,9 +115,16 @@ public class Executable {
         Arbitrator arbitrator = new Arbitrator(behaviorArray);
         arbitrator.go();
 
+        close();
+    }
+
+	public static void close() {
+		ts.close();
         ss.close();
         cs.close();
         sensorMotor.close();
+        leftMotor.close();
+        rightMotor.close();
         System.exit(0);
-    }
+	}
 }

@@ -102,13 +102,15 @@ public class LeftMaze implements Behavior {
 	 * @return -1, 0, 1, or 2 for a left, forward, right, or no path respectively with priority in that order.
 	 */
 	private int detectNextMovePath() {
-		int leftRotationAngle = -45;
-		int rightRotationAngle = -90;
-		boolean forwardPossible = this.getConsecutiveAdjustments() < this.getMaxConsecutiveAdjustments();
+		int leftRotationAngle = 45;
+		int rightRotationAngle = -55;
+		
+		this.getSensorMotor().rotateTo(-15);
+		boolean forwardPossible = (this.getConsecutiveAdjustments() < this.getMaxConsecutiveAdjustments()) && this.onDarkSurface();
 		boolean  rightPossible = false;
 		
-		
-		this.getSensorMotor().rotateTo(-leftRotationAngle);
+		this.getSensorMotor().rotateTo(leftRotationAngle);
+
 		if(this.onDarkSurface()) {
 			return -1;
 		}

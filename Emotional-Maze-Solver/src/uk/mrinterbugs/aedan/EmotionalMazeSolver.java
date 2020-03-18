@@ -7,11 +7,13 @@ public class EmotionalMazeSolver implements Behavior{
 	private QRHandler qrhandler;
 	private LowBattery lowbattery;
 	private EscapeExit escapeexit;
+	private RemoteControll remotecontroll;
 	
-	public EmotionalMazeSolver(LeftMaze leftmaze, EscapeExit escapeexit, LowBattery lowbattery, QRHandler qrhandler) {
+	public EmotionalMazeSolver(LeftMaze leftmaze, EscapeExit escapeexit, LowBattery lowbattery, QRHandler qrhandler, RemoteControll remotecontroll) {
 		this.leftmaze = leftmaze;
 		this.escapeexit = escapeexit;
 		this.qrhandler = qrhandler;
+		this.remotecontroll = remotecontroll;
 		this.lowbattery = lowbattery;
 		leftmaze.start();
 		escapeexit.start();
@@ -28,6 +30,7 @@ public class EmotionalMazeSolver implements Behavior{
 		leftmaze.action();
 		escapeexit.action();
 		lowbattery.action();
+		remotecontroll.action();
 		qrhandler.action();
 	}
 
@@ -36,6 +39,7 @@ public class EmotionalMazeSolver implements Behavior{
 		leftmaze.suppress();
 		escapeexit.suppress();
 		lowbattery.suppress();
+		remotecontroll.suppress();
 		qrhandler.suppress();
 	}
 

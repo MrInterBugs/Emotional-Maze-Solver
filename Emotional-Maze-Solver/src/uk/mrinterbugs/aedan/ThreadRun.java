@@ -1,5 +1,7 @@
 package uk.mrinterbugs.aedan;
 
+import lejos.hardware.Button;
+import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.BaseRegulatedMotor;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
@@ -25,8 +27,31 @@ public class ThreadRun {
     private static float lightLevels[];
     private static Navigator navi;
     private static SampleProvider color;
-	
+    private static AndroidConnection ac = new AndroidConnection();
+    private static MovePilot pilot;
+    
+    /**
+     * Displays the program and version information until a button is pressed.
+     * Also shows group members names.
+     */
+    public static void firstDisplay() {
+    	LCD.drawString("Emotional Maze Solver",2,2);
+        LCD.drawString("Version 0.5",2,3);
+        LCD.drawString("Press Enter",2,5);
+        Button.ENTER.waitForPressAndRelease();
+        LCD.clear();
+        LCD.drawString("Aedan Lawrence",2,2);
+        LCD.drawString("Bruce Lay",2,3);
+        LCD.drawString("Edmund Chee",2,4);
+        LCD.drawString("Jules James",2,5);
+        LCD.drawString("Press Enter",2,6);
+        Button.ENTER.waitForPressAndRelease();
+        LCD.clear();
+    }
+    
 	private static void startUp() {
+		firstDisplay();
+		
 		cs = new EV3ColorSensor(SensorPort.S2);
         color = cs.getRedMode();
 
@@ -37,21 +62,23 @@ public class ThreadRun {
         sensorMotor = new EV3MediumRegulatedMotor(MotorPort.D);
 
         Chassis chassis = new WheeledChassis(new Wheel[]{rightWheel,leftWheel},WheeledChassis.TYPE_DIFFERENTIAL);
-        MovePilot pilot = new MovePilot(chassis);
+        pilot = new MovePilot(chassis);
         pilot.setAngularAcceleration(100);
         pilot.setAngularSpeed(50);
         navi = new Navigator(pilot); 
         
+        ac.start();
         lightLevels = SensorCalibration.calibrateColorSensor(color);
 	}
 	
 	public static void main(String[] args) {
 		ThreadRun.startUp();
 		LeftMaze leftmaze = new LeftMaze(navi, color, lightLevels, sensorMotor);
-	    QRHandler qrhandler = new QRHandler(navi);
+	    QRHandler qrhandler = new QRHandler(navi, ac);
+	    RemoteControll remotecontroll = new RemoteControll(pilot, ac, leftmaze);
 	    LowBattery lowbattery = new LowBattery();
 	    EscapeExit escapeexit = new EscapeExit();
-	    Behavior EmotionalMazeSolver = new EmotionalMazeSolver(leftmaze, escapeexit, lowbattery, qrhandler);
+	    Behavior EmotionalMazeSolver = new EmotionalMazeSolver(leftmaze, escapeexit, lowbattery, qrhandler, remotecontroll);
 	        
 	    Behavior[] behaviorArray = {EmotionalMazeSolver};
 	      

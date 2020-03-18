@@ -1,6 +1,5 @@
 package uk.mrinterbugs.aedan;
 
-import lejos.hardware.Battery;
 import lejos.hardware.Sound;
 import lejos.hardware.lcd.LCD;
 import lejos.robotics.navigation.Navigator;
@@ -21,26 +20,22 @@ import lejos.robotics.subsumption.Behavior;
 public class QRHandler implements Behavior{
 	private String input;
 	private String current;
-	private AndroidConnection ac = new AndroidConnection();
+	private AndroidConnection ac;
 	private Navigator navi;
-	private boolean suppressed = false;
 
-	public QRHandler(Navigator navi) {
+	public QRHandler(Navigator navi, AndroidConnection ac) {
 		this.navi = navi;
+		this.ac =  ac;
 	}
 
 	@Override
 	public boolean takeControl() {
-		suppressed = false;
 		return true;
 	}
 
 	@Override
 	public synchronized void action() {
-		suppressed = false;
 		notifyAll();
-		ac.start();
-		System.out.println(Battery.getVoltage());
 		while (true) {
 			try {
 				try {
@@ -88,7 +83,6 @@ public class QRHandler implements Behavior{
 
 	@Override
 	public synchronized void suppress() {
-		suppressed = true;
 		notifyAll();
 	}
 }

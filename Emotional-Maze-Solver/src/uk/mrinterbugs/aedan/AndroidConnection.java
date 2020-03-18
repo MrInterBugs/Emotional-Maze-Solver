@@ -40,7 +40,7 @@ public class AndroidConnection extends Thread {
 	 * @throws InterruptedException 
 	 */
 	public synchronized void setInput(String input) throws InterruptedException {
-		this.input = input;
+		AndroidConnection.input = input;
 		this.wait();
 	}
 	
@@ -70,7 +70,7 @@ public class AndroidConnection extends Thread {
 		}
 		if (connection != null) {
 			try {
-				in = new BufferedInputStream( connection.getInputStream());
+				in = new BufferedInputStream(connection.getInputStream());
 			} catch (IOException ignored) {
 			}
 			try {

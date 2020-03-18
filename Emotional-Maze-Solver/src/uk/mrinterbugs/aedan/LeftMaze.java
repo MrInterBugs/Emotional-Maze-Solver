@@ -13,7 +13,7 @@ import lejos.robotics.subsumption.Behavior;
  * @author Aedan Lawrence
  * @author Bruce Lay
  * @author Edmund Chee
- * @author Joules James
+ * @author Jules James
  * 
  * @version 0.5
  * @since 2020-03-01
@@ -109,8 +109,8 @@ public class LeftMaze implements Behavior {
 		boolean forwardPossible = (this.getConsecutiveAdjustments() < this.getMaxConsecutiveAdjustments()) && this.onDarkSurface();
 		boolean  rightPossible = false;
 		
-		
 		this.getSensorMotor().rotateTo(leftRotationAngle);
+
 		if(this.onDarkSurface()) {
 			return -1;
 		}

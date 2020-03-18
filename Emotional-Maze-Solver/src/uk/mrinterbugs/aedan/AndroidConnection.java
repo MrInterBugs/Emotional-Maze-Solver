@@ -24,7 +24,7 @@ import lejos.hardware.lcd.LCD;
  * @version 0.5
  * @since 2020-02-27
  */
-public class Remote extends Thread {
+public class AndroidConnection extends Thread {
 	private static String IPaddress = "192.168.0.7";
 	private static int port = 1234;
 	public static Socket connection = new Socket();
@@ -37,17 +37,22 @@ public class Remote extends Thread {
 	
 	/**
 	 * Setter used to clear the value of input once it has been handled by a behaviour.
+	 * @throws InterruptedException 
 	 */
-	public static void setInput() {
-		input = "";
+	public synchronized void setInput(String input) throws InterruptedException {
+		AndroidConnection.input = input;
+		this.wait();
 	}
 	
 	/**
 	 * Allows behaviours to get the input from the android app.
+	 * @throws InterruptedException 
 	 */
-	public static String getInput() {
-		return input;
-		
+	public synchronized String getInput() throws InterruptedException {
+		this.notify();
+		String current = input;
+		input = "";
+		return current;
 	}
 	
 	/**
@@ -65,7 +70,7 @@ public class Remote extends Thread {
 		}
 		if (connection != null) {
 			try {
-				in = new BufferedInputStream( connection.getInputStream());
+				in = new BufferedInputStream(connection.getInputStream());
 			} catch (IOException ignored) {
 			}
 			try {
@@ -82,8 +87,15 @@ public class Remote extends Thread {
 					for (int index= 0 ; index < read ; index++) {						
 						input = input + (char)buffer[index];
 					}
+					LCD.drawString(input, 0, 2);
 					out.write("Reply:".getBytes(), 0, 6);
 					out.write(buffer, 0, read);
+					try {
+						setInput(input);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						System.out.println(e);
+					}
 				}
 			} catch (IOException ignored) {
 			}

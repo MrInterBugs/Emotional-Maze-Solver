@@ -2,6 +2,8 @@ package uk.mrinterbugs.aedan;
 
 import lejos.hardware.Sound;
 import lejos.hardware.lcd.LCD;
+import lejos.hardware.sensor.NXTSoundSensor;
+import lejos.robotics.SampleProvider;
 import lejos.robotics.navigation.Navigator;
 import lejos.robotics.subsumption.Behavior;
 
@@ -22,10 +24,16 @@ public class QRHandler implements Behavior{
 	private String current;
 	private AndroidConnection ac;
 	private Navigator navi;
+	private SampleProvider sound;
+	private float soundlevel;
+	private LeftMaze leftmaze;
 
-	public QRHandler(Navigator navi, AndroidConnection ac) {
+	public QRHandler(Navigator navi, AndroidConnection ac, LeftMaze leftmaze, SampleProvider sound, float slevel) {
 		this.navi = navi;
 		this.ac =  ac;
+		this.leftmaze = leftmaze;
+		this.sound = sound;
+		this.soundlevel = slevel;
 	}
 
 	@Override
@@ -63,11 +71,11 @@ public class QRHandler implements Behavior{
 			        	LCD.clear();
 			            break;
 			        case "SAD": 
-			        	LCD.clear();
-			            break;
-			        case "SNORLAX":
 			        	navi.getMoveController().setLinearSpeed(34);
 			        	Sound.beep();
+			        	break;
+			        case "SNORLAX":
+			        	(new Snorlax(this.sound,this.soundlevel,this.leftmaze)).run();
 			            break;
 			        case "CLAP":
 			        	navi.getMoveController().setLinearSpeed(17);

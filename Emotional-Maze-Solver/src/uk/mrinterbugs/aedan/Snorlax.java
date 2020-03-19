@@ -4,6 +4,7 @@ import java.io.File;
 
 import lejos.hardware.Sound;
 import lejos.hardware.sensor.NXTSoundSensor;
+import lejos.robotics.SampleProvider;
 import lejos.robotics.subsumption.Behavior;
 
 /**
@@ -20,7 +21,7 @@ import lejos.robotics.subsumption.Behavior;
 public class Snorlax extends Thread {
 
 	private boolean suppressed = false;
-	private NXTSoundSensor sound;
+	private SampleProvider sound;
 	private float soundLevels;
 	private String input;
 	private String current;
@@ -31,7 +32,7 @@ public class Snorlax extends Thread {
 	/**
 	 * Constructor to pass through the name of the file to be played "JohnDoe.wav"
 	 */
-	public Snorlax(NXTSoundSensor ss,float slevel,LeftMaze leftmaze) {
+	public Snorlax(SampleProvider ss,float slevel,LeftMaze leftmaze) {
 		this.sound = ss;
 		this.soundLevels = slevel;
 		this.leftmaze = leftmaze;

@@ -37,7 +37,6 @@ public class EmotionalMazeSolver implements Behavior{
 		leftmaze.suppress();
 		escapeexit.suppress();
 		lowbattery.suppress();
-		remotecontroll.suppress();
 		qrhandler.suppress();
 	}
 }

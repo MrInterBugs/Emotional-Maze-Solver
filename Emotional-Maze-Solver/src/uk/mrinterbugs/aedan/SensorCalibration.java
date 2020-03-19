@@ -52,12 +52,28 @@ public class SensorCalibration {
      */
     public static float calibrateSoundSensor(SampleProvider soundSampler) {
     	float[] backgroundNoiseLevel = new float[1];
+    	float[] loud = new float[1];
     	LCD.drawString("Press enter to", 2, 2);
-    	LCD.drawString("calibrate sound", 2, 3);
+    	LCD.drawString("calibrate quiet", 2, 3);
     	
+    	Button.ENTER.waitForPressAndRelease();
     	backgroundNoiseLevel[0] = averageReadings(soundSampler);
-    	backgroundNoiseLevel[0] += 0.1;
-    	return backgroundNoiseLevel[0];
+    	
+    	LCD.clear();
+    	LCD.drawString("Press enter to", 2, 2);
+    	LCD.drawString("calibrate clap", 2, 3);
+    	
+    	Button.ENTER.waitForPressAndRelease();
+    	float maxsound = 0;
+    	while(!Button.ENTER.isDown()) {
+    		soundSampler.fetchSample(loud,0);
+    		if(loud[0]>maxsound) {
+    			maxsound = loud[0];
+    		}	
+    	}
+    	
+    	return (backgroundNoiseLevel[0]+
+    	maxsound)/2;
     }
     
     /**
@@ -77,4 +93,6 @@ public class SensorCalibration {
     	}
     	return average;
     }
+    
+
 }

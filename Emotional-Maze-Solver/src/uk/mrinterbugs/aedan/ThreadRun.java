@@ -29,6 +29,7 @@ public class ThreadRun {
     private static SampleProvider color;
     private static AndroidConnection ac = new AndroidConnection();
     private static MovePilot pilot;
+    private static String START_UP = "StartUpSound.wav";
     
     /**
      * Displays the program and version information until a button is pressed.
@@ -68,6 +69,7 @@ public class ThreadRun {
         navi = new Navigator(pilot); 
         
         ac.start();
+        (new PlaySound(START_UP)).run();
         lightLevels = SensorCalibration.calibrateColorSensor(color);
 	}
 	
@@ -75,10 +77,9 @@ public class ThreadRun {
 		ThreadRun.startUp();
 		LeftMaze leftmaze = new LeftMaze(navi, color, lightLevels, sensorMotor);
 	    QRHandler qrhandler = new QRHandler(navi, ac);
-	    RemoteControll remotecontroll = new RemoteControll(pilot, ac, leftmaze);
 	    LowBattery lowbattery = new LowBattery();
 	    EscapeExit escapeexit = new EscapeExit();
-	    Behavior EmotionalMazeSolver = new EmotionalMazeSolver(leftmaze, escapeexit, lowbattery, qrhandler, remotecontroll);
+	    Behavior EmotionalMazeSolver = new EmotionalMazeSolver(leftmaze, escapeexit, lowbattery, qrhandler);
 	        
 	    Behavior[] behaviorArray = {EmotionalMazeSolver};
 	      

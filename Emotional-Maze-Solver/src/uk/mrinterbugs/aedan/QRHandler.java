@@ -67,9 +67,11 @@ public class QRHandler implements Behavior{
 			            break;
 			        case "SNORLAX":
 			        	navi.getMoveController().setLinearSpeed(34);
+			        	Sound.beep();
 			            break;
 			        case "CLAP":
 			        	navi.getMoveController().setLinearSpeed(17);
+			        	Sound.beep();
 			        	break;
 					}
 				} catch(NullPointerException ingored) {

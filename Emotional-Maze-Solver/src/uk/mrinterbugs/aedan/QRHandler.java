@@ -1,5 +1,7 @@
 package uk.mrinterbugs.aedan;
 
+import javax.net.ssl.SSLContext;
+
 import lejos.hardware.Sound;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.sensor.NXTSoundSensor;
@@ -27,6 +29,7 @@ public class QRHandler implements Behavior{
 	private SampleProvider sound;
 	private float soundlevel;
 	private LeftMaze leftmaze;
+	private float[] level;
 
 	public QRHandler(Navigator navi, AndroidConnection ac, LeftMaze leftmaze, SampleProvider sound, float slevel) {
 		this.navi = navi;
@@ -52,15 +55,12 @@ public class QRHandler implements Behavior{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				LCD.drawString(input, 0, 2);
+				
 				String[] inputArray = input.split("\\s+");
 				if(inputArray[0].equals("QR:")) {
 					current = inputArray[1];
 				}
 				try {
-					if(!current.equals("")) {
-						LCD.drawString(current, 0, 3);
-					}
 					switch (current) {
 			        case "END":
 			        	LCD.drawString("END", 0, 4);
@@ -76,7 +76,7 @@ public class QRHandler implements Behavior{
 			        	break;
 			        case "SNORLAX":
 			        	(new Snorlax(this.sound,this.soundlevel,this.leftmaze)).run();
-			            break;
+			        	break;
 			        case "CLAP":
 			        	navi.getMoveController().setLinearSpeed(17);
 			        	Sound.beep();

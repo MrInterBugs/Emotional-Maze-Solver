@@ -76,7 +76,7 @@ public class ThreadRun {
         navi = new Navigator(pilot); 
         
         ac.start();
-        (new PlaySound(START_UP)).run();
+        //(new PlaySound(START_UP)).run();
 
         lightLevels = SensorCalibration.calibrateColorSensor(color);
         

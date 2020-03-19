@@ -1,9 +1,6 @@
 package uk.mrinterbugs.aedan;
 
 import lejos.hardware.Button;
-import lejos.hardware.port.SensorPort;
-import lejos.hardware.sensor.EV3TouchSensor;
-import lejos.robotics.SampleProvider;
 import lejos.robotics.subsumption.Behavior;
 
 /**
@@ -20,9 +17,7 @@ import lejos.robotics.subsumption.Behavior;
  */
 public class EscapeExit extends Thread implements Behavior {
 	private boolean suppressed = false;
-	private EV3TouchSensor ts = new EV3TouchSensor(SensorPort.S3);
-    private SampleProvider touch = ts.getTouchMode();
-
+  
     @Override
     public boolean takeControl() {
         return true;
@@ -43,8 +38,6 @@ public class EscapeExit extends Thread implements Behavior {
     public void run() {
 		while(true) {
 			if (!suppressed) {
-				float[] sample = new float[1];
-				touch.fetchSample(sample, 0);
 				if(Button.ESCAPE.isDown()) {
 					System.exit(0);
 				}

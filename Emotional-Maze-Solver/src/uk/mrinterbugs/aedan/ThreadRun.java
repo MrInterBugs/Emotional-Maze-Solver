@@ -70,6 +70,7 @@ public class ThreadRun {
         
         ac.start();
         (new PlaySound(START_UP)).run();
+
         lightLevels = SensorCalibration.calibrateColorSensor(color);
 	}
 	

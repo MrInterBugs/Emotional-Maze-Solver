@@ -2,7 +2,6 @@ package uk.mrinterbugs.aedan;
 
 import lejos.hardware.sensor.SensorMode;
 import lejos.robotics.SampleProvider;
-import lejos.robotics.chassis.WheeledChassis;
 
 /**
 * Filters sound ( like a high pass filter ) so that we do not hear two loud * sounds within a certain amount of time

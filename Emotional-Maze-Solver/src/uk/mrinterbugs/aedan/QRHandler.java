@@ -1,10 +1,7 @@
 package uk.mrinterbugs.aedan;
 
-import javax.net.ssl.SSLContext;
-
 import lejos.hardware.Sound;
 import lejos.hardware.lcd.LCD;
-import lejos.hardware.sensor.NXTSoundSensor;
 import lejos.robotics.SampleProvider;
 import lejos.robotics.navigation.Navigator;
 import lejos.robotics.subsumption.Behavior;
@@ -29,7 +26,6 @@ public class QRHandler implements Behavior{
 	private SampleProvider sound;
 	private float soundlevel;
 	private LeftMaze leftmaze;
-	private float[] level;
 
 	public QRHandler(Navigator navi, AndroidConnection ac, LeftMaze leftmaze, SampleProvider sound, float slevel) {
 		this.navi = navi;
